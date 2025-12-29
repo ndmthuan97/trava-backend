@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36401.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trava.API", "src\Trava.API\Trava.API.csproj", "{1858B019-296E-F821-9063-6DB02D840138}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trava.Application", "src\Trava.Application\Trava.Application.csproj", "{E8A0EBAC-EB6C-DC58-D8C7-CF3BCBEF7866}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trava.Domain", "src\Trava.Domain\Trava.Domain.csproj", "{43898519-A822-785B-F875-E6BE6FABDDC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trava.Infrastructure", "src\Trava.Infrastructure\Trava.Infrastructure.csproj", "{877BF8B4-A02B-A9E6-62E5-C1AC2E2232A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trava.Shared", "src\Trava.Shared\Trava.Shared.csproj", "{A9AE2A4E-B8ED-CF94-32B6-2140165D54CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1858B019-296E-F821-9063-6DB02D840138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1858B019-296E-F821-9063-6DB02D840138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1858B019-296E-F821-9063-6DB02D840138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1858B019-296E-F821-9063-6DB02D840138}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8A0EBAC-EB6C-DC58-D8C7-CF3BCBEF7866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8A0EBAC-EB6C-DC58-D8C7-CF3BCBEF7866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8A0EBAC-EB6C-DC58-D8C7-CF3BCBEF7866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8A0EBAC-EB6C-DC58-D8C7-CF3BCBEF7866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43898519-A822-785B-F875-E6BE6FABDDC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43898519-A822-785B-F875-E6BE6FABDDC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43898519-A822-785B-F875-E6BE6FABDDC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43898519-A822-785B-F875-E6BE6FABDDC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{877BF8B4-A02B-A9E6-62E5-C1AC2E2232A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{877BF8B4-A02B-A9E6-62E5-C1AC2E2232A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{877BF8B4-A02B-A9E6-62E5-C1AC2E2232A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{877BF8B4-A02B-A9E6-62E5-C1AC2E2232A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9AE2A4E-B8ED-CF94-32B6-2140165D54CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9AE2A4E-B8ED-CF94-32B6-2140165D54CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9AE2A4E-B8ED-CF94-32B6-2140165D54CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9AE2A4E-B8ED-CF94-32B6-2140165D54CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1858B019-296E-F821-9063-6DB02D840138} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{E8A0EBAC-EB6C-DC58-D8C7-CF3BCBEF7866} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{43898519-A822-785B-F875-E6BE6FABDDC9} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{877BF8B4-A02B-A9E6-62E5-C1AC2E2232A5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{A9AE2A4E-B8ED-CF94-32B6-2140165D54CF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B2B3FA2E-E10E-4175-8D3A-DF74EC335C9C}
+	EndGlobalSection
+EndGlobal
