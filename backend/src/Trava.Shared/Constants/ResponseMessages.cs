@@ -1,0 +1,68 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Trava.Shared.Enums;
+using Trava.Shared.Models;
+
+namespace Trava.Shared.Constants
+{
+    public static class ResponseMessages
+    {
+        internal static readonly Dictionary<CustomCode, MessageDetail> _messages = new Dictionary<CustomCode, MessageDetail>
+    {
+        //Success Messages
+        { CustomCode.Success, new MessageDetail {
+            HttpCode = StatusCodes.Status200OK, Message = "Success" } },
+        { CustomCode.Created, new MessageDetail {
+            HttpCode = StatusCodes.Status201Created, Message = "Resource created successfully" } },
+        { CustomCode.Updated, new MessageDetail {
+            HttpCode = StatusCodes.Status200OK, Message = "Resource updated successfully" } },
+        { CustomCode.Deleted, new MessageDetail {
+            HttpCode = StatusCodes.Status200OK, Message = "Resource deleted successfully" } },
+
+        //Error Messages
+        { CustomCode.ModelInvalid, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Invalid model state" } },
+        { CustomCode.Unauthorized, new MessageDetail {
+            HttpCode = StatusCodes.Status401Unauthorized, Message = "Unauthorized" } },
+        { CustomCode.Forbidden, new MessageDetail {
+            HttpCode = StatusCodes.Status403Forbidden, Message = "Access denied" } },
+        { CustomCode.SystemError, new MessageDetail {
+            HttpCode = StatusCodes.Status500InternalServerError, Message = "An unexpected error occurred in the system" } },
+        { CustomCode.InvalidToken, new MessageDetail {
+            HttpCode = StatusCodes.Status401Unauthorized, Message = "Invalid token. Please log in again" } },
+        { CustomCode.EmailAlreadyExists, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Email already exists" } },
+        { CustomCode.ProvidedInformationIsInValid, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Provided information is invalid" } },
+        { CustomCode.UserNotExists, new MessageDetail {
+            HttpCode = StatusCodes.Status404NotFound, Message = "User does not exist" } },
+        { CustomCode.UserNotConfirmed, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "User account not confirmed" } },
+        { CustomCode.InvalidCredentials, new MessageDetail {
+            HttpCode = StatusCodes.Status401Unauthorized, Message = "Invalid credentials" } },
+        { CustomCode.UserAccountLocked, new MessageDetail {
+            HttpCode = StatusCodes.Status423Locked, Message = "User account is locked" } },
+        { CustomCode.ConfirmEmailTokenInvalidOrExpired, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Confirm email token is invalid or expired" } },
+        { CustomCode.UserAlreadyConfirmed, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "User account already confirmed" } },
+        { CustomCode.NewPasswordSameAsOld, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "New password cannot be the same as the old password" } },
+        { CustomCode.OtpInvalidOrExpired, new MessageDetail {
+            HttpCode = StatusCodes.Status401Unauthorized, Message = "OTP code is invalid or has expired." } },
+        { CustomCode.TwoFactorIsAlreadyEnabled, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Two-factor authentication is already enabled." } },
+        { CustomCode.TwoFactorIsAlreadyDisabled, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Two-factor authentication is already disabled." } },
+        { CustomCode.UserIdNotFound, new MessageDetail {
+            HttpCode = StatusCodes.Status401Unauthorized, Message = "User ID not found in the request. Please ensure you are authenticated." } },
+        { CustomCode.AccessTokenInvalidOrExpired, new MessageDetail {
+            HttpCode = StatusCodes.Status401Unauthorized, Message = "Access token is invalid or has expired." } },
+    };
+
+        public static IReadOnlyDictionary<CustomCode, MessageDetail> Messages => _messages;
+    }
+}
