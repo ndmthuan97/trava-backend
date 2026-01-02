@@ -51,67 +51,6 @@ namespace Trava.Infrastructure.Extensions
                     NameClaimType = ClaimTypes.NameIdentifier,
                     RoleClaimType = ClaimTypes.Role
                 };
-
-                // options.Events = new JwtBearerEvents
-                // {
-                //     OnTokenValidated = async context =>
-                //     {
-                //         try
-                //         {
-                //             var blacklistService = context.HttpContext.RequestServices.GetRequiredService<ITokenBlackListService>();
-
-                //             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(' ').Last();
-
-                //             if (string.IsNullOrWhiteSpace(token))
-                //             {
-                //                 context.Fail("Missing access token");
-                //                 return;
-                //             }
-
-                //             if (await blacklistService.IsTokenBlacklistedAsync(token))
-                //             {
-                //                 context.Fail("Token has been revoked");
-                //                 return;
-                //             }
-
-                //             var userId = context.Principal?
-                //                 .FindFirstValue(ClaimTypes.NameIdentifier);
-
-                //             if (string.IsNullOrWhiteSpace(userId))
-                //             {
-                //                 context.Fail("User identifier not found in token");
-                //                 return;
-                //             }
-
-                //             var issuedAtClaim = context.Principal
-                //                 .FindFirst(JwtRegisteredClaimNames.Iat);
-
-                //             if (issuedAtClaim == null ||
-                //                 !long.TryParse(issuedAtClaim.Value, out var iat))
-                //             {
-                //                 context.Fail("Invalid token issued-at claim");
-                //                 return;
-                //             }
-
-                //             var tokenIssuedAt = DateTimeOffset.FromUnixTimeSeconds(iat).UtcDateTime;
-
-                //             if (await blacklistService.AreUserTokensInvalidatedAsync(userId, tokenIssuedAt))
-                //             {
-                //                 var exceptionToken = await blacklistService.GetExceptionTokenAsync(userId);
-
-                //                 if (string.IsNullOrEmpty(exceptionToken) || exceptionToken != token)
-                //                 {
-                //                     context.Fail("User session has been invalidated");
-                //                     return;
-                //                 }
-                //             }
-                //         }
-                //         catch (Exception)
-                //         {
-                //             context.Fail("Authentication service unavailable");
-                //         }
-                //     }
-                // };
             });
             return services;
         }
