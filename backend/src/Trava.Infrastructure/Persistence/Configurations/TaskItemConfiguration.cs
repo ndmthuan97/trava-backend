@@ -16,7 +16,8 @@ namespace Trava.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.Title)
                 .IsRequired()
-                .HasMaxLength(300);
+                .HasMaxLength(300)
+                .HasColumnType("citext");
 
             builder.Property(x => x.Description)
                 .HasMaxLength(4000);
@@ -69,6 +70,8 @@ namespace Trava.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.AssignedUserId);
 
             builder.HasIndex(x => x.ParentTaskId);
+            
+            builder.HasIndex(x => new { x.SpaceId, x.Title }).IsUnique();
         }
     }
 }

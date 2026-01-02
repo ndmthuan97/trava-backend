@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251230143549_InitialCreate")]
+    [Migration("20260102044303_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,6 +23,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "8.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Trava.Domain.Entities.Notification", b =>
@@ -74,7 +75,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("citext");
 
                     b.Property<int>("SpaceType")
                         .HasColumnType("integer");
@@ -88,6 +89,9 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedBy", "Name")
+                        .IsUnique();
 
                     b.HasIndex("CreatedBy", "SpaceType");
 
@@ -256,7 +260,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("citext");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -271,6 +275,9 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.HasIndex("ParentTaskId");
 
                     b.HasIndex("SpaceId");
+
+                    b.HasIndex("SpaceId", "Title")
+                        .IsUnique();
 
                     b.ToTable("TaskItems");
                 });
@@ -348,14 +355,9 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("NotificationId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("TargetUserId", "NotificationId");
 
                     b.HasIndex("NotificationId");
-
-                    b.HasIndex("NotificationId1");
 
                     b.ToTable("UserNotifications");
                 });
@@ -463,14 +465,10 @@ namespace Trava.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Trava.Domain.Entities.UserNotification", b =>
                 {
                     b.HasOne("Trava.Domain.Entities.Notification", "Notification")
-                        .WithMany()
+                        .WithMany("UserNotifications")
                         .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Trava.Domain.Entities.Notification", null)
-                        .WithMany("UserNotifications")
-                        .HasForeignKey("NotificationId1");
 
                     b.HasOne("Trava.Domain.Entities.User", "TargetUser")
                         .WithMany()

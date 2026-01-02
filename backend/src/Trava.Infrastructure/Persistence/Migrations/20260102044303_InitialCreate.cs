@@ -11,6 +11,9 @@ namespace Trava.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:citext", ",,");
+
             migrationBuilder.CreateTable(
                 name: "Notifications",
                 columns: table => new
@@ -53,7 +56,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Name = table.Column<string>(type: "citext", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     SpaceType = table.Column<int>(type: "integer", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
@@ -80,8 +83,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 {
                     TargetUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     NotificationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
-                    NotificationId1 = table.Column<Guid>(type: "uuid", nullable: true)
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,11 +94,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         principalTable: "Notifications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserNotifications_Notifications_NotificationId1",
-                        column: x => x.NotificationId1,
-                        principalTable: "Notifications",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserNotifications_Users_TargetUserId",
                         column: x => x.TargetUserId,
@@ -174,7 +171,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SpaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     ParentTaskId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Title = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Title = table.Column<string>(type: "citext", maxLength: 300, nullable: false),
                     Description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Priority = table.Column<int>(type: "integer", nullable: false),
@@ -272,6 +269,12 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Spaces_CreatedBy_Name",
+                table: "Spaces",
+                columns: new[] { "CreatedBy", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Spaces_CreatedBy_SpaceType",
                 table: "Spaces",
                 columns: new[] { "CreatedBy", "SpaceType" });
@@ -302,14 +305,15 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 column: "SpaceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TaskItems_SpaceId_Title",
+                table: "TaskItems",
+                columns: new[] { "SpaceId", "Title" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserNotifications_NotificationId",
                 table: "UserNotifications",
                 column: "NotificationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserNotifications_NotificationId1",
-                table: "UserNotifications",
-                column: "NotificationId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",

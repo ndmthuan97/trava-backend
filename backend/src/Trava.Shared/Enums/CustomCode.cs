@@ -34,5 +34,18 @@ namespace Trava.Shared.Enums
         TwoFactorIsAlreadyDisabled = 4016,
         UserIdNotFound = 4017,
         AccessTokenInvalidOrExpired = 4018,
+        UnauthorizedAction = 4019,
+
+        //Space Error
+        SpaceNotFound = 4100,
+        SpaceNameAlreadyExists = 4101,
+
+        //TaskItem Error
+        TaskItemNotFound = 4200,
+        ParentTaskItemNotFound = 4201,
+        TaskItemTitleAlreadyExists = 4202,
+        ParentTaskItemNotExistInSpace = 4203,
+        AssignedUserNotInSpace = 4204,
+        
     }
 }

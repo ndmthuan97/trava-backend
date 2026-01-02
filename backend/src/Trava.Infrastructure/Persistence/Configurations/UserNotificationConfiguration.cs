@@ -17,7 +17,7 @@ namespace Trava.Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Notification)
-                .WithMany()
+                .WithMany(n => n.UserNotifications)
                 .HasForeignKey(x => x.NotificationId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

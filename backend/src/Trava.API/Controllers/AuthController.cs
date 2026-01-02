@@ -25,5 +25,12 @@ namespace Trava.API.Controllers
         {
             return await HandleRequestAsync(() => _authService.RegisterAsync(request));
         }
+
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+        {
+            return await HandleRequestAsync(() => _authService.LoginAsync(request));
+        }
     }
 }

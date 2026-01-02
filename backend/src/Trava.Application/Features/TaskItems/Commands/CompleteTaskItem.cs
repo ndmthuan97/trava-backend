@@ -1,0 +1,48 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using MediatR;
+using Trava.Application.Common.Exceptions;
+using Trava.Application.Interfaces;
+using Trava.Domain.Entities;
+using Trava.Shared.Enums;
+
+namespace Trava.Application.Features.TaskItems.Commands
+{
+    public class CompleteTaskItemCommand : IRequest<Unit>
+    {
+        [JsonIgnore]
+        public Guid Id { get; set; }
+        [JsonIgnore]
+        public Guid CompletedBy { get; set; }
+    }
+
+    public class CompleteTaskItemCommandHandler : IRequestHandler<CompleteTaskItemCommand, Unit>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CompleteTaskItemCommandHandler(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<Unit> Handle(CompleteTaskItemCommand request, CancellationToken cancellationToken)
+        {
+            var taskItemRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
+            var taskItem = await taskItemRepo.GetByIdAsync(request.Id) ?? throw new AppException(CustomCode.TaskItemNotFound);
+
+            if (taskItem.AssignedUserId != request.CompletedBy)
+            {
+                throw new AppException(CustomCode.UnauthorizedAction);
+            }
+            
+            taskItem.CompletedAt = DateTimeOffset.UtcNow;
+            taskItemRepo.Update(taskItem);
+            await _unitOfWork.CommitAsync();
+
+            return Unit.Value;
+        }
+    }
+}

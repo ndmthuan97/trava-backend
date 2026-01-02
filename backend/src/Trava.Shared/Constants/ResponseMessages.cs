@@ -61,6 +61,26 @@ namespace Trava.Shared.Constants
             HttpCode = StatusCodes.Status401Unauthorized, Message = "User ID not found in the request. Please ensure you are authenticated." } },
         { CustomCode.AccessTokenInvalidOrExpired, new MessageDetail {
             HttpCode = StatusCodes.Status401Unauthorized, Message = "Access token is invalid or has expired." } },
+        { CustomCode.UnauthorizedAction, new MessageDetail {
+            HttpCode = StatusCodes.Status403Forbidden, Message = "You are not authorized to perform this action." } },
+
+        //Space Error Messages
+        { CustomCode.SpaceNotFound, new MessageDetail {
+            HttpCode = StatusCodes.Status404NotFound, Message = "Space not found." } },
+        { CustomCode.SpaceNameAlreadyExists, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Space name already exists." } },
+
+        //TaskItem Error Messages
+        { CustomCode.TaskItemNotFound, new MessageDetail {
+            HttpCode = StatusCodes.Status404NotFound, Message = "Task item not found." } },
+        { CustomCode.ParentTaskItemNotFound, new MessageDetail {
+            HttpCode = StatusCodes.Status404NotFound, Message = "Parent task item not found." } },
+        { CustomCode.TaskItemTitleAlreadyExists, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "Task item title already exists." } },
+        { CustomCode.ParentTaskItemNotExistInSpace, new MessageDetail {
+            HttpCode = StatusCodes.Status404NotFound, Message = "Parent task item does not exist in the specified space." } },
+        { CustomCode.AssignedUserNotInSpace, new MessageDetail {
+            HttpCode = StatusCodes.Status400BadRequest, Message = "The user assigned to the task is not a member of the space." } },
     };
 
         public static IReadOnlyDictionary<CustomCode, MessageDetail> Messages => _messages;

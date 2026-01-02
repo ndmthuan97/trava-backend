@@ -19,11 +19,6 @@ namespace Trava.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
-
-            builder.HasMany(x => x.UserNotifications)
-                .WithOne(x => x.Notification)
-                .HasForeignKey(x => x.NotificationId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
