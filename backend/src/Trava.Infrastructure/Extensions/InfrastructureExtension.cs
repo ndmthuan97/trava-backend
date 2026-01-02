@@ -27,14 +27,6 @@ namespace Trava.Infrastructure.Extensions
 
             services.AddHealthChecks().Services.AddDbContext<AppDbContext>();
 
-            // Add Redis distributed cache
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = configuration["Redis:ConnectionString"];
-                options.InstanceName = configuration["Redis:InstanceName"];
-            });
-            services.AddSingleton<ICacheService, RedisCacheService>();
-
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
