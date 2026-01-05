@@ -71,7 +71,7 @@ namespace Trava.Infrastructure.Services.Identify
 
             var tokenOptions = _jwtHandler.GenerateTokenOptions(claims);
             var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            
+
             var refreshToken = TokenHelper.GenerateRefreshToken();
             user.RefreshToken = refreshToken;
 

@@ -18,7 +18,7 @@ namespace Trava.Application.Features.Spaces.Specifications
     {
         public Expression<Func<Space, bool>> Criteria { get; private set; }
         public Func<IQueryable<Space>, IOrderedQueryable<Space>>? OrderBy { get; private set; }
-        public List<Expression<Func<Space, object>>> Includes { get; private set; } = [];
+        public List<Expression<Func<Space, object>>> Includes { get; private set; } = new List<Expression<Func<Space, object>>>();
         public Func<IQueryable<Space>, IQueryable<Space>>? Selector => null;
         public int Skip { get; private set; }
         public int Take { get; private set; }

@@ -13,6 +13,6 @@ namespace Trava.Domain.Entities
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         // Navigation properties
-        public virtual ICollection<UserNotification> UserNotifications { get; set; } = [];
+        public virtual ICollection<UserNotification> UserNotifications { get; set; } = new List<UserNotification>();
     }
 }

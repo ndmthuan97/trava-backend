@@ -40,14 +40,14 @@ namespace Trava.API.Controllers
         [HttpGet("{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSpaceById ([FromRoute] Guid id)
+        public async Task<IActionResult> GetSpaceById([FromRoute] Guid id)
         {
             return await HandleRequestAsync(async () =>
             {
                 return (CustomCode.Success, await _mediator.Send(new GetSpaceByIdQuery(id)));
             });
         }
-        
+
         [HttpPost]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]

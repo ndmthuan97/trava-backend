@@ -63,14 +63,14 @@ namespace Trava.API.Controllers
             }
             catch (AppException ex)
             {
-                var errors = ex.Errors ?? [ex.Message];
+                var errors = ex.Errors ?? new[] { ex.Message };
 
                 return Respond(ex.StatusCode, resultSelector(defaultResult), errors);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error in {ControllerName}", typeof(TController).Name);
-                return Respond(CustomCode.SystemError, null, [ex.Message]);
+                return Respond(CustomCode.SystemError, null, new[] { ex.Message });
             }
         }
 

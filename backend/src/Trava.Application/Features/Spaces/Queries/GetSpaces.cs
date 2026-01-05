@@ -12,7 +12,7 @@ using Trava.Domain.Entities;
 
 namespace Trava.Application.Features.Spaces.Queries
 {
-    public record GetSpacesQuery (SpaceSpecParam Param) : IRequest<Pagination<SpaceResponse>>;
+    public record GetSpacesQuery(SpaceSpecParam Param) : IRequest<Pagination<SpaceResponse>>;
 
     public class GetSpacesQueryHandler : IRequestHandler<GetSpacesQuery, Pagination<SpaceResponse>>
     {

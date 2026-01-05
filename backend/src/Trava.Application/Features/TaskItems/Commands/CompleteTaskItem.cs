@@ -12,7 +12,7 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public record CompleteTaskItemCommand([property: JsonIgnore]Guid Id, [property: JsonIgnore]Guid CompletedBy) : IRequest<Unit>;
+    public record CompleteTaskItemCommand([property: JsonIgnore] Guid Id, [property: JsonIgnore] Guid CompletedBy) : IRequest<Unit>;
 
     public class CompleteTaskItemCommandHandler : IRequestHandler<CompleteTaskItemCommand, Unit>
     {
@@ -32,7 +32,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             {
                 throw new AppException(CustomCode.UnauthorizedAction);
             }
-            
+
             taskItem.CompletedAt = DateTimeOffset.UtcNow;
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();

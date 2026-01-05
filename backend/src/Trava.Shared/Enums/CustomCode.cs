@@ -46,7 +46,7 @@ namespace Trava.Shared.Enums
         TaskItemTitleAlreadyExists = 4202,
         ParentTaskItemNotExistInSpace = 4203,
         AssignedUserNotInSpace = 4204,
-        
+
 
         //Space Invitation Error
         SpaceInvitationNotFound = 4300,

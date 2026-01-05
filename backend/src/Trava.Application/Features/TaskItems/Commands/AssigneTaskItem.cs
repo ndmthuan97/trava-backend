@@ -84,5 +84,5 @@ namespace Trava.Application.Features.TaskItems.Commands
                 .NotEmpty()
                 .WithMessage("Unable to identify the user performing this action.");
         }
-    }   
+    }
 }

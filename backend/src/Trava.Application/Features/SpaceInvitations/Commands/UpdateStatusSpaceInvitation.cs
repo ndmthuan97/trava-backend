@@ -51,7 +51,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             invitation.Status = request.InvitationStatus;
 
             invitationRepo.Update(invitation);
-            
+
             if (invitation.Status == InvitationStatus.Accepted)
             {
                 var spaceMember = new SpaceMember

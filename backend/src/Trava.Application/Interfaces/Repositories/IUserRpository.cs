@@ -8,6 +8,6 @@ namespace Trava.Application.Interfaces.Repositories
 {
     public interface IUserRpository : IGenericRepository<User, Guid>
     {
-        
+
     }
 }

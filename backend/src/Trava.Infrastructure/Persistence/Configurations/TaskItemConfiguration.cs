@@ -70,7 +70,7 @@ namespace Trava.Infrastructure.Persistence.Configurations
             builder.HasIndex(x => x.AssignedUserId);
 
             builder.HasIndex(x => x.ParentTaskId);
-            
+
             builder.HasIndex(x => new { x.SpaceId, x.Title }).IsUnique();
         }
     }

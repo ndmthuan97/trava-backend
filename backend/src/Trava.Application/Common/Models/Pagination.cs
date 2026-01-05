@@ -10,7 +10,7 @@ namespace Trava.Application.Common.Models
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
         public long Count { get; set; }
-        public IReadOnlyCollection<T> Data { get; set; } = [];
+        public IReadOnlyCollection<T> Data { get; set; } = new List<T>();
 
         public Pagination() { }
 

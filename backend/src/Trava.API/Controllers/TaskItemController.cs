@@ -10,6 +10,8 @@ using Trava.API.Models;
 using Trava.Application.Features.TaskItems.Commands;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
+using Trava.Application.Features.TaskItems.Queries;
+using Trava.Application.Features.TaskItems.Specifications;
 
 namespace Trava.API.Controllers
 {
@@ -23,6 +25,28 @@ namespace Trava.API.Controllers
             _mediator = mediator;
         }
 
+        [HttpGet]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTaskItems([FromQuery] TaskItemSpecParam param)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetTaskItemsBySpaceQuery(param)));
+            });
+        }
+
+        [HttpGet("{id:guid}")]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTaskItemById([FromRoute] Guid id)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetTaskItemByIdQuery(id)));
+            });
+        }
+
         [HttpPost]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
@@ -32,10 +56,10 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command = command with {CreatedBy = userIdGuid};
+            command = command with { CreatedBy = userIdGuid };
             return await HandleRequestAsync(async () => (CustomCode.Created, await _mediator.Send(command)));
         }
-        
+
         [HttpPut("{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
@@ -45,7 +69,7 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command = command with {Id = id};
+            command = command with { Id = id };
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
@@ -71,7 +95,7 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command = command with {Id = id, CreatedBy = userIdGuid};
+            command = command with { Id = id, CreatedBy = userIdGuid };
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
     }

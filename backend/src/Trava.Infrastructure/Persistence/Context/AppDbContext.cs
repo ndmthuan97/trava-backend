@@ -11,8 +11,9 @@ namespace Trava.Infrastructure.Persistence.Context
 {
     public class AppDbContext : DbContext
     {
-        protected AppDbContext(){
-            
+        protected AppDbContext()
+        {
+
         }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
