@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trava.API.Models;
 using Trava.Application.Features.Spaces.Commands;
+using Trava.Application.Features.Spaces.Queries;
 using Trava.Application.Features.Spaces.Responses;
+using Trava.Application.Features.Spaces.Specifications;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
 
@@ -24,6 +26,17 @@ namespace Trava.API.Controllers
             _mediator = mediator;
         }
 
+        [HttpGet]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetSpaces([FromQuery] SpaceSpecParam param)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetSpaceQuery(param)));
+            });
+        }
+        
         [HttpPost]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
