@@ -15,21 +15,20 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public class CreateTaskItemCommand : IRequest<TaskItemResponse>
-    {
-        public Guid SpaceId { get; set; }
-        public Guid? ParentTaskId { get; set; } = null;
-        public string Title { get; set; } = default!;
-        public string Description { get; set; } = default!;
-        public TaskItemStatus Status { get; set; } = TaskItemStatus.NotStart;
-        public TaskItemPriority Priority { get; set; } = TaskItemPriority.Low;
-        public int Point { get; set; } = 1;
-        public DateTimeOffset? StartDate { get; set; } = null;
-        public DateTimeOffset? DueDate { get; set; } = null;
-        public Guid? AssignedUserId { get; set; }
-        [JsonIgnore]
-        public Guid CreatedBy { get; set; }
-    }
+    public record CreateTaskItemCommand(
+        Guid SpaceId,
+        string Title,
+        string Description,
+        TaskItemStatus Status,
+        TaskItemPriority Priority,
+        int Point,
+        DateTimeOffset? StartDate,
+        DateTimeOffset? DueDate,
+        Guid? ParentTaskId,
+        Guid? AssignedUserId,
+        [property: JsonIgnore] Guid CreatedBy
+    ) : IRequest<TaskItemResponse>;
+
 
     public class CreateTaskItemCommandHandler : IRequestHandler<CreateTaskItemCommand, TaskItemResponse>
     {
@@ -49,36 +48,22 @@ namespace Trava.Application.Features.TaskItems.Commands
             var space = await spaceRepo.GetByIdAsync(request.SpaceId) ?? throw new AppException(CustomCode.SpaceNotFound);
             if (space.SpaceType == SpaceType.Personal)
             {
-                if (space.CreatedBy != request.CreatedBy) throw new AppException(CustomCode.UnauthorizedAction);
+                if (space.CreatedBy != request.CreatedBy)
+                    throw new AppException(CustomCode.UnauthorizedAction);
             }
             else
             {
-                var isMember = await spaceMemberRepo.ExistsAsync(sm => sm.SpaceId == request.SpaceId && sm.UserId == request.CreatedBy && sm.Role == SpaceRole.Owner);
-                if (!isMember) throw new AppException(CustomCode.UnauthorizedAction);
-            }
+                var isOwner = await spaceMemberRepo.ExistsAsync(sm =>
+                    sm.SpaceId == request.SpaceId &&
+                    sm.UserId == request.CreatedBy &&
+                    sm.Role == SpaceRole.Owner);
 
-            if (request.AssignedUserId.HasValue)
-            {
-                if (space.SpaceType == SpaceType.Personal && request.AssignedUserId != space.CreatedBy)
-                    throw new AppException(CustomCode.AssignedUserNotInSpace);
-                else
-                {
-                    var isAssignedUserMember = await spaceMemberRepo.ExistsAsync(sm => sm.SpaceId == request.SpaceId && sm.UserId == request.AssignedUserId.Value);
-                    if (!isAssignedUserMember) throw new AppException(CustomCode.AssignedUserNotInSpace);
-                }
-            }
-
-            if (request.ParentTaskId.HasValue)
-            {
-                var parentTask = await taskItemRepo.GetByIdAsync(request.ParentTaskId.Value) ?? throw new AppException(CustomCode.ParentTaskItemNotFound);
-                if (parentTask.SpaceId != request.SpaceId) throw new AppException(CustomCode.ParentTaskItemNotExistInSpace);
+                if (!isOwner)
+                    throw new AppException(CustomCode.UnauthorizedAction);
             }
 
             var taskItem = _mapper.Map<TaskItem>(request);
-            if (request.AssignedUserId.HasValue)
-            {
-                taskItem.AssignedAt = DateTimeOffset.UtcNow;
-            }
+            if (request.AssignedUserId.HasValue) taskItem.AssignedAt = DateTimeOffset.UtcNow;
 
             await taskItemRepo.AddAsync(taskItem);
             await _unitOfWork.CommitAsync();
@@ -89,27 +74,67 @@ namespace Trava.Application.Features.TaskItems.Commands
 
     public class CreateTaskItemCommandValidator : AbstractValidator<CreateTaskItemCommand>
     {
-        public CreateTaskItemCommandValidator()
+        public CreateTaskItemCommandValidator(IUnitOfWork unitOfWork)
         {
+            var spaceRepo = unitOfWork.GetRepository<Space, Guid>();
+            var spaceMemberRepo = unitOfWork.GetRepository<SpaceMember, (Guid SpaceId, Guid UserId)>();
+            var taskItemRepo = unitOfWork.GetRepository<TaskItem, Guid>();
+
             RuleFor(x => x.Title)
-                .NotEmpty().WithMessage("Title is required.")
-                .MaximumLength(300).WithMessage("Title must not exceed 300 characters.");
+                .NotEmpty()
+                .MaximumLength(300);
 
             RuleFor(x => x.Description)
-                .MaximumLength(4000).WithMessage("Description must not exceed 4000 characters.");
+                .MaximumLength(4000);
 
             RuleFor(x => x.Status)
-                .IsInEnum().WithMessage("Invalid status value.");
+                .IsInEnum();
 
             RuleFor(x => x.Priority)
-                .IsInEnum().WithMessage("Invalid priority value.");
+                .IsInEnum();
 
             RuleFor(x => x.Point)
-                .InclusiveBetween(1, 10).WithMessage("Point must be between 1 and 10.");
+                .InclusiveBetween(1, 10);
 
             RuleFor(x => x)
                 .Must(x => !x.StartDate.HasValue || !x.DueDate.HasValue || x.StartDate <= x.DueDate)
                 .WithMessage("StartDate must be earlier than DueDate.");
+
+            RuleFor(x => x.SpaceId)
+                .MustAsync((id, ct) => spaceRepo.ExistsAsync(id))
+                .WithMessage("Space not found.");
+
+            When(x => x.AssignedUserId.HasValue, () =>
+            {
+                RuleFor(x => x.AssignedUserId)
+                    .MustAsync(async (cmd, assignedUserId, ct) =>
+                    {
+                        var space = await spaceRepo.GetByIdAsync(cmd.SpaceId);
+                        if (space == null) return false;
+
+                        if (space.SpaceType == SpaceType.Personal)
+                            return assignedUserId == space.CreatedBy;
+
+                        return await spaceMemberRepo.ExistsAsync(sm =>
+                            sm.SpaceId == cmd.SpaceId &&
+                            sm.UserId == assignedUserId!.Value);
+                    })
+                    .WithErrorCode(CustomCode.AssignedUserNotInSpace.ToString())
+                    .WithMessage("Assigned user does not belong to this space.");
+            });
+
+
+            When(x => x.ParentTaskId.HasValue, () =>
+            {
+                RuleFor(x => x)
+                    .MustAsync(async (cmd, ct) =>
+                    {
+                        var parent = await taskItemRepo.GetByIdAsync(cmd.ParentTaskId!.Value);
+                        return parent != null && parent.SpaceId == cmd.SpaceId;
+                    })
+                    .WithErrorCode(CustomCode.ParentTaskItemNotExistInSpace.ToString())
+                    .WithMessage("Parent task does not belong to this space.");
+            });
         }
     }
 }

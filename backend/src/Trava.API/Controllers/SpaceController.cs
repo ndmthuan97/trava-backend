@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trava.API.Models;
 using Trava.Application.Features.Spaces.Commands;
+using Trava.Application.Features.Spaces.Responses;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
 
@@ -32,8 +33,10 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command.CreatedBy = userIdGuid;
-            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Created);
+            command = command with { CreatedBy = userIdGuid };
+            return await HandleRequestAsync(async () =>
+                (CustomCode.Created, await _mediator.Send(command with { CreatedBy = userIdGuid }))
+            );
         }
 
         [HttpPut("{id:guid}")]
@@ -44,8 +47,7 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command.Id = id;
-            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
+            return await HandleRequestAsync(() => _mediator.Send(command with { Id = id }), CustomCode.Updated);
         }
     }
 }

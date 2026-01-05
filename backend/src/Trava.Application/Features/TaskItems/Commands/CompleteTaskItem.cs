@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Trava.Application.Common.Exceptions;
 using Trava.Application.Interfaces;
@@ -11,13 +12,7 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public class CompleteTaskItemCommand : IRequest<Unit>
-    {
-        [JsonIgnore]
-        public Guid Id { get; set; }
-        [JsonIgnore]
-        public Guid CompletedBy { get; set; }
-    }
+    public record CompleteTaskItemCommand([property: JsonIgnore]Guid Id, [property: JsonIgnore]Guid CompletedBy) : IRequest<Unit>;
 
     public class CompleteTaskItemCommandHandler : IRequestHandler<CompleteTaskItemCommand, Unit>
     {
@@ -43,6 +38,15 @@ namespace Trava.Application.Features.TaskItems.Commands
             await _unitOfWork.CommitAsync();
 
             return Unit.Value;
+        }
+    }
+
+    public class CompleteTaskItemCommandValidator : AbstractValidator<CompleteTaskItemCommand>
+    {
+        public CompleteTaskItemCommandValidator()
+        {
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Task item ID is required.");
+            RuleFor(x => x.CompletedBy).NotEmpty().WithMessage("CompletedBy user ID is required.");
         }
     }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
+using Trava.Application.Features.SpaceInvitations.Commands;
+using Trava.Application.Features.SpaceInvitations.Responses;
 using Trava.Application.Features.Spaces.Commands;
 using Trava.Application.Features.Spaces.Responses;
 using Trava.Application.Features.TaskItems.Commands;
@@ -23,6 +26,11 @@ namespace Trava.Application.Common.Mappings
             CreateMap<TaskItem, TaskItemResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
                 .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority.ToString()));
+
+            CreateMap<CreateSpaceInvitationCommand, SpaceInvitation>();
+            CreateMap<SpaceInvitation, SpaceInvitationResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
         }
     }
 }

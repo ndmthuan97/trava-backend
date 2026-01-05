@@ -32,8 +32,8 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command.CreatedBy = userIdGuid;
-            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Created);
+            command = command with {CreatedBy = userIdGuid};
+            return await HandleRequestAsync(async () => (CustomCode.Created, await _mediator.Send(command)));
         }
         
         [HttpPut("{id:guid}")]
@@ -45,20 +45,33 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command.Id = id;
+            command = command with {Id = id};
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
         [HttpPut("complete/{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CompleteTaskItem([FromBody] CompleteTaskItemCommand command)
+        public async Task<IActionResult> CompleteTaskItem([FromRoute] Guid id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command.CompletedBy = userIdGuid;
+            var command = new CompleteTaskItemCommand(id, userIdGuid);
+            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
+        }
+
+        [HttpPut("assigne/{id:guid}")]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> AssigneTaskItem([FromRoute] Guid id, [FromBody] AssigneTaskItemCommand command)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            command = command with {Id = id, CreatedBy = userIdGuid};
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
     }

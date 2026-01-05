@@ -108,11 +108,9 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SpaceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    InvitedUserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    InvitedEmail = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    InvitedUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    InvitedBy = table.Column<Guid>(type: "uuid", nullable: false),
                     ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
@@ -125,17 +123,11 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SpaceInvitations_Users_InvitedBy",
-                        column: x => x.InvitedBy,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_SpaceInvitations_Users_InvitedUserId",
                         column: x => x.InvitedUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,11 +234,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SpaceInvitations_InvitedBy",
-                table: "SpaceInvitations",
-                column: "InvitedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SpaceInvitations_InvitedUserId",

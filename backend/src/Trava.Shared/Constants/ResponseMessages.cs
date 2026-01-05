@@ -81,6 +81,12 @@ namespace Trava.Shared.Constants
             HttpCode = StatusCodes.Status404NotFound, Message = "Parent task item does not exist in the specified space." } },
         { CustomCode.AssignedUserNotInSpace, new MessageDetail {
             HttpCode = StatusCodes.Status400BadRequest, Message = "The user assigned to the task is not a member of the space." } },
+
+        //Space Invitation Error Messages
+        { CustomCode.SpaceInvitationNotFound, new MessageDetail {
+                HttpCode = StatusCodes.Status404NotFound, Message = "Space invitation not found." } },
+        { CustomCode.InvalidInvitationStatusTransition, new MessageDetail {
+                HttpCode = StatusCodes.Status400BadRequest, Message = "This invitation can only be accepted or rejected while it is pending." } },
     };
 
         public static IReadOnlyDictionary<CustomCode, MessageDetail> Messages => _messages;

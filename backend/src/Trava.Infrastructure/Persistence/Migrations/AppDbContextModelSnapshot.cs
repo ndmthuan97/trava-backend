@@ -104,14 +104,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("ExpiredAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("InvitedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("InvitedEmail")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<Guid?>("InvitedUserId")
+                    b.Property<Guid>("InvitedUserId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Role")
@@ -124,8 +117,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InvitedBy");
 
                     b.HasIndex("InvitedUserId");
 
@@ -372,16 +363,11 @@ namespace Trava.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Trava.Domain.Entities.SpaceInvitation", b =>
                 {
-                    b.HasOne("Trava.Domain.Entities.User", "Inviter")
-                        .WithMany()
-                        .HasForeignKey("InvitedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Trava.Domain.Entities.User", "InvitedUser")
                         .WithMany()
                         .HasForeignKey("InvitedUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Trava.Domain.Entities.Space", "Space")
                         .WithMany()
@@ -390,8 +376,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("InvitedUser");
-
-                    b.Navigation("Inviter");
 
                     b.Navigation("Space");
                 });

@@ -16,14 +16,12 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.Spaces.Commands
 {
-    public class CreateSpaceCommand : IRequest<SpaceResponse>
-    {
-        public string Name { get; set; } = default!;
-        public string Description { get; set; } = default!;
-        public SpaceType SpaceType { get; set; } = SpaceType.Personal;
-        [JsonIgnore]
-        public Guid CreatedBy { get; set; }
-    }
+    public record CreateSpaceCommand(
+        string Name,
+        string Description,
+        SpaceType SpaceType,
+        [property: JsonIgnore] Guid CreatedBy
+    ) : IRequest<SpaceResponse>;
 
     public class CreateSpaceCommandHandler : IRequestHandler<CreateSpaceCommand, SpaceResponse>
     {
@@ -54,37 +52,38 @@ namespace Trava.Application.Features.Spaces.Commands
                 };
                 await _spaceMemberRepository.AddAsync(spaceMember);
             }
-
-            try
-            {
-                await _unitOfWork.CommitAsync();
-            }
-            catch (DbUpdateException ex) when (ex.InnerException != null && ex.InnerException.Message.Contains("IX_Spaces_CreatedBy_Name"))
-            {
-                throw new AppException(CustomCode.SpaceNameAlreadyExists);
-            }
-
-
+            await _unitOfWork.CommitAsync();
             return _mapper.Map<SpaceResponse>(space);
         }
     }
 
     public class CreateSpaceCommandValidator : AbstractValidator<CreateSpaceCommand>
     {
-        public CreateSpaceCommandValidator()
+        public CreateSpaceCommandValidator(IUnitOfWork unitOfWork)
         {
+            var spaceRepo = unitOfWork.GetRepository<Space, Guid>();
+
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Space name is required.")
-                .MaximumLength(200).WithMessage("Space name must not exceed 200 characters.");
+                .MaximumLength(200);
 
             RuleFor(x => x.Description)
-                .MaximumLength(1000).WithMessage("Description must not exceed 1000 characters.");
+                .MaximumLength(1000);
 
             RuleFor(x => x.SpaceType)
-                .IsInEnum().WithMessage("Invalid SpaceType.");
+                .IsInEnum();
 
             RuleFor(x => x.CreatedBy)
-                .NotEmpty().WithMessage("CreatedBy is required.");
+                .NotEmpty();
+
+            RuleFor(x => x)
+                .MustAsync(async (command, ct) =>
+                    !await spaceRepo.ExistsAsync(s =>
+                        s.CreatedBy == command.CreatedBy &&
+                        s.Name.ToLower() == command.Name.ToLower()))
+                .WithErrorCode(CustomCode.SpaceNameAlreadyExists.ToString())
+                .WithMessage("Space name already exists.");
         }
     }
+
 }

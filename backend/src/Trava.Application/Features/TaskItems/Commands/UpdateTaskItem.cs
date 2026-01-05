@@ -14,19 +14,18 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public class UpdateTaskItemCommand : IRequest<Unit>
-    {
-        [JsonIgnore]
-        public Guid Id { get; set; }
-        public string Title { get; set; } = default!;
-        public string Description { get; set; } = default!;
-        public TaskItemStatus Status { get; set; } = TaskItemStatus.NotStart;
-        public TaskItemPriority Priority { get; set; } = TaskItemPriority.Low;
-        public int Point { get; set; } = 1;
-        public DateTimeOffset? StartDate { get; set; } = null;
-        public DateTimeOffset? DueDate { get; set; } = null;
-        public Guid? AssignedUserId { get; set; }
-    }
+    public record UpdateTaskItemCommand
+    (
+        [property: JsonIgnore] Guid Id,
+        string Title,
+        string Description,
+        TaskItemStatus Status,
+        TaskItemPriority Priority,
+        int Point,
+        DateTimeOffset? StartDate,
+        DateTimeOffset? DueDate,
+        Guid? AssignedUserId
+    ) : IRequest<Unit>;
 
     public class UpdateTaskItemCommandHandler : IRequestHandler<UpdateTaskItemCommand, Unit>
     {
@@ -49,11 +48,12 @@ namespace Trava.Application.Features.TaskItems.Commands
             taskItem.Point = request.Point;
             taskItem.StartDate = request.StartDate;
             taskItem.DueDate = request.DueDate;
-            taskItem.AssignedUserId = request.AssignedUserId;
-
-            if (request.AssignedUserId.HasValue)
+            if (taskItem.AssignedUserId != request.AssignedUserId)
             {
-                taskItem.AssignedAt = DateTimeOffset.UtcNow;
+                taskItem.AssignedUserId = request.AssignedUserId;
+                taskItem.AssignedAt = request.AssignedUserId.HasValue
+                    ? DateTimeOffset.UtcNow
+                    : null;
             }
 
             taskItemRepo.Update(taskItem);

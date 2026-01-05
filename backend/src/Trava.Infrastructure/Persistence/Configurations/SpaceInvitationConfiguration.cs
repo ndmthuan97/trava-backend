@@ -10,8 +10,11 @@ namespace Trava.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.InvitedEmail)
-                .HasMaxLength(255);
+            builder.Property(x => x.SpaceId)
+                .IsRequired();
+
+            builder.Property(x => x.InvitedUserId)
+                .IsRequired();
 
             builder.Property(x => x.Role)
                 .IsRequired();
@@ -19,20 +22,18 @@ namespace Trava.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Status)
                 .IsRequired();
 
+            builder.Property(x => x.ExpiredAt)
+                .IsRequired(false);
+
             builder.HasOne(x => x.Space)
                 .WithMany()
                 .HasForeignKey(x => x.SpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(x => x.Inviter)
-                .WithMany()
-                .HasForeignKey(x => x.InvitedBy)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasOne(x => x.InvitedUser)
                 .WithMany()
                 .HasForeignKey(x => x.InvitedUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
