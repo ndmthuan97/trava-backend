@@ -12,20 +12,20 @@ using Trava.Domain.Entities;
 
 namespace Trava.Application.Features.Spaces.Queries
 {
-    public record GetSpaceQuery (SpaceSpecParam Param) : IRequest<Pagination<SpaceResponse>>;
+    public record GetSpacesQuery (SpaceSpecParam Param) : IRequest<Pagination<SpaceResponse>>;
 
-    public class GetSpaceQueryHandler : IRequestHandler<GetSpaceQuery, Pagination<SpaceResponse>>
+    public class GetSpacesQueryHandler : IRequestHandler<GetSpacesQuery, Pagination<SpaceResponse>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetSpaceQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetSpacesQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<Pagination<SpaceResponse>> Handle(GetSpaceQuery request, CancellationToken cancellationToken)
+        public async Task<Pagination<SpaceResponse>> Handle(GetSpacesQuery request, CancellationToken cancellationToken)
         {
             var spec = new SpaceSpecification(request.Param);
             var result = await _unitOfWork.GetRepository<Space, Guid>().GetWithSpecAsync(spec);
