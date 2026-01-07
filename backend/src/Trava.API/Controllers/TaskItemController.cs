@@ -86,7 +86,7 @@ namespace Trava.API.Controllers
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
-        [HttpPut("assigne/{id:guid}")]
+        [HttpPatch("assigne/{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> AssigneTaskItem([FromRoute] Guid id, [FromBody] AssigneTaskItemCommand command)
@@ -97,6 +97,19 @@ namespace Trava.API.Controllers
 
             command = command with { Id = id, CreatedBy = userIdGuid };
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
+        }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteTaskItem([FromRoute] Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            var command = new DeleteTaskItemCommand(id, userIdGuid);
+            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Success);
         }
     }
 }

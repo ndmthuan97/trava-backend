@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Trava.Domain.Common;
 using Trava.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Trava.Infrastructure.Persistence.Context
 {
@@ -84,6 +85,21 @@ namespace Trava.Infrastructure.Persistence.Context
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                var deletedAtProperty = entityType.FindProperty("DeletedAt");
+                if (deletedAtProperty != null && deletedAtProperty.ClrType == typeof(DateTimeOffset?))
+                {
+                    var parameter = Expression.Parameter(entityType.ClrType, "x");
+                    var propertyAccess = Expression.Property(parameter, "DeletedAt");
+                    var nullValue = Expression.Constant(null, typeof(DateTimeOffset?));
+                    var equal = Expression.Equal(propertyAccess, nullValue);
+                    var lambda = Expression.Lambda(equal, parameter);
+
+                    builder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+                }
+            }
         }
     }
 }
