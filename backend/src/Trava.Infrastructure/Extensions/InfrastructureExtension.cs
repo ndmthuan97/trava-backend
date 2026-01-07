@@ -7,9 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Trava.Application.Interfaces;
 using Trava.Application.Interfaces.Repositories;
+using Trava.Application.Interfaces.Services;
 using Trava.Infrastructure.Persistence.Context;
 using Trava.Infrastructure.Persistence.Repositories;
 using Trava.Infrastructure.Persistence.UnitOfWork;
+using Trava.Infrastructure.Services;
 
 namespace Trava.Infrastructure.Extensions
 {
@@ -26,6 +28,12 @@ namespace Trava.Infrastructure.Extensions
                 }), poolSize: 10);
 
             services.AddHealthChecks().Services.AddDbContext<AppDbContext>();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration["Redis:ConnectionString"];
+            });
+
+            services.AddSingleton<ICacheService, RedisCacheService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

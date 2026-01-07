@@ -1,7 +1,9 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
+using Trava.API.Middlewares;
 using Trava.Application.Extensions;
 using Trava.Infrastructure.Extensions;
 using Trava.Infrastructure.Services.Identify;
@@ -53,9 +55,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+{
+    builder.SetIsOriginAllowed(_ => true)
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .WithExposedHeaders("Content-Disposition")
+           .AllowCredentials();
+}));
+
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddCustomRateLimiting();
 
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings")
@@ -70,8 +82,12 @@ await app.MigrationsDatabaseAsync();
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 

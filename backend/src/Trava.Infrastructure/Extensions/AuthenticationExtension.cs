@@ -21,6 +21,7 @@ namespace Trava.Infrastructure.Extensions
         {
             services.AddScoped<JwtHandler>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenBlackListService, TokenBlackListService>();
 
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
 
@@ -50,6 +51,58 @@ namespace Trava.Infrastructure.Extensions
 
                     NameClaimType = ClaimTypes.NameIdentifier,
                     RoleClaimType = ClaimTypes.Role
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    // Add custom token validation for blacklisted tokens
+                    OnTokenValidated = async context =>
+                    {
+                        var tokenBlacklistService = context.HttpContext.RequestServices
+                            .GetRequiredService<ITokenBlackListService>();
+
+                        var token = context.Request.Headers["Authorization"]
+                            .FirstOrDefault()?.Split(" ").Last();
+
+                        if (string.IsNullOrEmpty(token))
+                        {
+                            return;
+                        }
+
+                        // Check if individual token is blacklisted
+                        if (!string.IsNullOrEmpty(token) && await tokenBlacklistService.IsTokenBlacklistedAsync(token))
+                        {
+                            context.Fail("Token has been revoked");
+                            return;
+                        }
+
+                        // Check if all user tokens have been invalidated
+                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (!string.IsNullOrEmpty(userIdClaim))
+                        {
+                            var tokenHandler = new JwtSecurityTokenHandler();
+                            var jwtToken = tokenHandler.ReadJwtToken(token);
+                            var tokenIssuedAt = jwtToken.IssuedAt; // Use DateTime directly
+
+                            if (await tokenBlacklistService.AreUserTokensInvalidatedAsync(userIdClaim, tokenIssuedAt))
+                            {
+                                var exceptionToken = await tokenBlacklistService.GetExceptionTokenAsync(userIdClaim);
+
+                                if (!string.IsNullOrEmpty(exceptionToken))
+                                {
+                                    if (token != exceptionToken)
+                                    {
+                                        context.Fail("This session was logged out by user.");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    context.Fail("All user tokens have been invalidated");
+                                    return;
+                                }
+                            }
+                        }
+                    }
                 };
             });
             return services;

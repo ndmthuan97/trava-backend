@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Trava.Application.Common.Exceptions;
 using Trava.Application.Features.Auth.DTOs;
+using Trava.Application.Features.Auth.Enums;
 using Trava.Application.Interfaces;
 using Trava.Application.Interfaces.Services;
 using Trava.Domain.Entities;
 using Trava.Domain.Enums;
+using Trava.Infrastructure.Services.Identify.Interfaces;
 using Trava.Shared.Enums;
 
 namespace Trava.Infrastructure.Services.Identify
@@ -21,17 +23,21 @@ namespace Trava.Infrastructure.Services.Identify
         private readonly ILogger<AuthService> _logger;
         private readonly JwtHandler _jwtHandler;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ITokenBlackListService _tokenBlackListService;
 
         public AuthService(
             IUnitOfWork unitOfWork,
             ILogger<AuthService> logger,
             JwtHandler jwtHandler,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ITokenBlackListService tokenBlackListService
+            )
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _jwtHandler = jwtHandler;
             _serviceProvider = serviceProvider;
+            _tokenBlackListService = tokenBlackListService;
         }
 
         public async Task<(CustomCode, AuthResultDto)> LoginAsync(LoginRequestDto request)
@@ -118,6 +124,63 @@ namespace Trava.Infrastructure.Services.Identify
             await _unitOfWork.CommitAsync();
 
             _logger.LogInformation("New user registered with email: {Email}.", request.Email);
+            return CustomCode.Success;
+        }
+
+        public async Task LogoutAsync(string userId, string accessToken)
+        {
+            if (!Guid.TryParse(userId, out var userGuid)) throw new UnauthorizedAccessException("Invalid user id");
+
+            var userRepo = _unitOfWork.GetRepository<User, Guid>();
+            var user = await userRepo.GetByIdAsync(userGuid);
+            if (user != null)
+            {
+                user.RefreshToken = null!;
+                user.RefreshTokenExpiryTime = null;
+                userRepo.Update(user);
+            }
+
+            var expiry = TokenHelper.GetTokenExpiry(accessToken);
+            if (expiry > DateTimeOffset.UtcNow)
+            {
+                await _tokenBlackListService.BlacklistTokenAsync(accessToken, expiry);
+            }
+
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<CustomCode> ChangePasswordAsync(ChangePasswordRequestDto request)
+        {
+            var userRepo = _unitOfWork.GetRepository<User, Guid>();
+            var user = await userRepo.GetByIdAsync(request.UserId) ?? throw new AppException(CustomCode.UserNotExists);
+
+            if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password)) throw new AppException(CustomCode.InvalidCredentials);
+
+            if (BCrypt.Net.BCrypt.Verify(request.NewPassword, user.Password)) throw new AppException(CustomCode.NewPasswordSameAsOld);
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            userRepo.Update(user);
+            await _unitOfWork.CommitAsync();
+
+            switch (request.LogoutBehavior)
+            {
+                case LogoutBehavior.LogoutAllIncludingCurrent:
+                    await _tokenBlackListService.BlacklistAllUserTokensAsync(request.UserId.ToString());
+                    _logger.LogInformation("All tokens invalidated for user {UserId} after password change", request.UserId);
+                    break;
+
+                case LogoutBehavior.LogoutOthersOnly:
+                    var accessToken = request.CurrentAccessToken;
+                    await _tokenBlackListService.BlacklistAllUserTokensExceptAsync(request.UserId.ToString(), accessToken);
+                    _logger.LogInformation("All tokens except current invalidated for user {UserId}", request.UserId);
+                    break;
+
+                default:
+                    _logger.LogInformation("No session invalidated for user {UserId}", request.UserId);
+                    break;
+            }
+
             return CustomCode.Success;
         }
     }
