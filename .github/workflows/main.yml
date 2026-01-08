@@ -17,32 +17,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout source
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # 3️⃣ Restore dependencies
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_PATH }} --verbosity minimal
 
-      # 4️⃣ Tạo appsettings.json từ secrets
-      - name: Create appsettings.json
-        run: |
-          echo '${{ secrets.APPSETTINGS_JSON }}' > ${{ env.API_PROJECT_PATH }}/appsettings.json
-
-      # 5️⃣ Build & Publish
       - name: Build & Publish
         run: |
           dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --verbosity minimal
           dotnet publish ${{ env.API_PROJECT_PATH }} -c Release -o ${{ env.PUBLISH_DIR }} --verbosity minimal
 
-      # 6️⃣ Deploy lên Azure Web App
       - name: 'Deploy to Azure WebApp'
         uses: azure/webapps-deploy@v2
         with:
