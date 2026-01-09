@@ -64,7 +64,6 @@ namespace Trava.Infrastructure.Services.Identify
             }
 
             user.LastLoginAt = DateTimeOffset.UtcNow;
-            var claims = TokenHelper.GetClaims(user, new List<Claim>());
 
             var authResponse = await GenerateToken(user, populateExp: true);
             return (CustomCode.Success, authResponse);
