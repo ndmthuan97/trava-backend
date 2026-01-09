@@ -21,7 +21,7 @@ namespace Trava.Infrastructure.Extensions
         {
             services.AddScoped<JwtHandler>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ITokenBlackListService, TokenBlackListService>();
+            services.AddScoped<ITokenRegistryService, TokenRegistryService>();
 
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
 
@@ -54,11 +54,11 @@ namespace Trava.Infrastructure.Extensions
                 };
                 options.Events = new JwtBearerEvents
                 {
-                    // Add custom token validation for blacklisted tokens
+                    // Add custom token validation for allowed tokens
                     OnTokenValidated = async context =>
                     {
-                        var tokenBlacklistService = context.HttpContext.RequestServices
-                            .GetRequiredService<ITokenBlackListService>();
+                        var tokenRegistryService = context.HttpContext.RequestServices
+                            .GetRequiredService<ITokenRegistryService>();
 
                         var token = context.Request.Headers["Authorization"]
                             .FirstOrDefault()?.Split(" ").Last();
@@ -68,39 +68,18 @@ namespace Trava.Infrastructure.Extensions
                             return;
                         }
 
-                        // Check if individual token is blacklisted
-                        if (!string.IsNullOrEmpty(token) && await tokenBlacklistService.IsTokenBlacklistedAsync(token))
+                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        if (string.IsNullOrEmpty(userIdClaim))
                         {
-                            context.Fail("Token has been revoked");
+                            context.Fail("User ID claim not found");
                             return;
                         }
 
-                        // Check if all user tokens have been invalidated
-                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        if (!string.IsNullOrEmpty(userIdClaim))
+                        // Check if token is in the allowed list for the user
+                        if (!await tokenRegistryService.IsTokenAllowedAsync(userIdClaim, token))
                         {
-                            var tokenHandler = new JwtSecurityTokenHandler();
-                            var jwtToken = tokenHandler.ReadJwtToken(token);
-                            var tokenIssuedAt = jwtToken.IssuedAt; // Use DateTime directly
-
-                            if (await tokenBlacklistService.AreUserTokensInvalidatedAsync(userIdClaim, tokenIssuedAt))
-                            {
-                                var exceptionToken = await tokenBlacklistService.GetExceptionTokenAsync(userIdClaim);
-
-                                if (!string.IsNullOrEmpty(exceptionToken))
-                                {
-                                    if (token != exceptionToken)
-                                    {
-                                        context.Fail("This session was logged out by user.");
-                                        return;
-                                    }
-                                }
-                                else
-                                {
-                                    context.Fail("All user tokens have been invalidated");
-                                    return;
-                                }
-                            }
+                            context.Fail("Token has been revoked or session expired");
+                            return;
                         }
                     }
                 };

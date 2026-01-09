@@ -23,21 +23,21 @@ namespace Trava.Infrastructure.Services.Identify
         private readonly ILogger<AuthService> _logger;
         private readonly JwtHandler _jwtHandler;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ITokenBlackListService _tokenBlackListService;
+        private readonly ITokenRegistryService _tokenRegistryService;
 
         public AuthService(
             IUnitOfWork unitOfWork,
             ILogger<AuthService> logger,
             JwtHandler jwtHandler,
             IServiceProvider serviceProvider,
-            ITokenBlackListService tokenBlackListService
+            ITokenRegistryService tokenRegistryService
             )
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _jwtHandler = jwtHandler;
             _serviceProvider = serviceProvider;
-            _tokenBlackListService = tokenBlackListService;
+            _tokenRegistryService = tokenRegistryService;
         }
 
         public async Task<(CustomCode, AuthResultDto)> LoginAsync(LoginRequestDto request)
@@ -89,6 +89,8 @@ namespace Trava.Infrastructure.Services.Identify
             _unitOfWork.GetRepository<User, Guid>().Update(user);
             await _unitOfWork.CommitAsync();
 
+            await _tokenRegistryService.RegisterTokenAsync(user.Id.ToString(), accessToken, TimeSpan.FromSeconds(_jwtHandler.GetExpiryInSecond()));
+
             return new AuthResultDto
             {
                 AccessToken = accessToken,
@@ -139,11 +141,7 @@ namespace Trava.Infrastructure.Services.Identify
                 userRepo.Update(user);
             }
 
-            var expiry = TokenHelper.GetTokenExpiry(accessToken);
-            if (expiry > DateTimeOffset.UtcNow)
-            {
-                await _tokenBlackListService.BlacklistTokenAsync(accessToken, expiry);
-            }
+            await _tokenRegistryService.InvalidateTokenAsync(userId, accessToken);
 
             await _unitOfWork.CommitAsync();
         }
@@ -165,13 +163,13 @@ namespace Trava.Infrastructure.Services.Identify
             switch (request.LogoutBehavior)
             {
                 case LogoutBehavior.LogoutAllIncludingCurrent:
-                    await _tokenBlackListService.BlacklistAllUserTokensAsync(request.UserId.ToString());
+                    await _tokenRegistryService.InvalidateAllTokensAsync(request.UserId.ToString());
                     _logger.LogInformation("All tokens invalidated for user {UserId} after password change", request.UserId);
                     break;
 
                 case LogoutBehavior.LogoutOthersOnly:
                     var accessToken = request.CurrentAccessToken;
-                    await _tokenBlackListService.BlacklistAllUserTokensExceptAsync(request.UserId.ToString(), accessToken);
+                    await _tokenRegistryService.InvalidateOtherTokensAsync(request.UserId.ToString(), accessToken);
                     _logger.LogInformation("All tokens except current invalidated for user {UserId}", request.UserId);
                     break;
 
