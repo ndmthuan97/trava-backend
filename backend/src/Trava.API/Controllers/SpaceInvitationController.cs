@@ -14,7 +14,7 @@ using Trava.Shared.Enums;
 namespace Trava.API.Controllers
 {
     [ApiController]
-    [Route("api/spaceinvitations")]
+    [Route("api/invitations")]
     public class SpaceInvitationController : BaseController<SpaceInvitationController>
     {
         private readonly IMediator _mediator;
