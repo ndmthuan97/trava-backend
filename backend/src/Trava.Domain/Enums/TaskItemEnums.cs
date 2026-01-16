@@ -2,7 +2,7 @@ namespace Trava.Domain.Enums
 {
     public enum TaskItemStatus
     {
-        NotStart = 02,
+        NotStart = 0,
         InProgress = 1,
         Completed = 2,
     }

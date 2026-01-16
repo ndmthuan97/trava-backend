@@ -3,8 +3,7 @@ namespace Trava.Domain.Enums
     public enum SpaceRole
     {
         Owner = 0,
-        Manager = 1,
-        Member = 2
+        Member = 1
     }
 
     public enum SpaceType
