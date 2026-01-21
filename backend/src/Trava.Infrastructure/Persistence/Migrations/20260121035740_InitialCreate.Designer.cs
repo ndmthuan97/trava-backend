@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260113095445_InitialCreate")]
+    [Migration("20260121035740_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -291,9 +291,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("FullName")
                         .HasMaxLength(200)

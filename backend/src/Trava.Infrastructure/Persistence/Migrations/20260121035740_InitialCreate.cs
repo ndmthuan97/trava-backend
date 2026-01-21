@@ -39,7 +39,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     Role = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Password = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     RefreshToken = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),

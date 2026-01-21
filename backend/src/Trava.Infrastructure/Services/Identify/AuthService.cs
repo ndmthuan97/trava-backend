@@ -45,12 +45,6 @@ namespace Trava.Infrastructure.Services.Identify
             var userRepo = _unitOfWork.GetRepository<User, Guid>();
             var user = await userRepo.FirstOrDefaultAsync(u => u.Email == request.Email) ?? throw new AppException(CustomCode.UserNotExists);
 
-            if (!user.EmailConfirmed)
-            {
-                _logger.LogWarning("Attempt to login with unconfirmed email: {Email}.", request.Email);
-                throw new AppException(CustomCode.UserNotConfirmed);
-            }
-
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
                 _logger.LogWarning("Invalid password attempt for email: {Email}.", request.Email);
@@ -96,7 +90,6 @@ namespace Trava.Infrastructure.Services.Identify
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 ExpiresIn = _jwtHandler.GetExpiryInSecond(),
-                Requires2FA = false,
                 Email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? user.Email
             };
         }
@@ -118,7 +111,6 @@ namespace Trava.Infrastructure.Services.Identify
                 Email = request.Email,
                 FullName = request.FullName,
                 Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                EmailConfirmed = true,
             };
 
             await userRepo.AddAsync(newUser);

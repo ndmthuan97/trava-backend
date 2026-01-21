@@ -37,9 +37,6 @@ namespace Trava.Infrastructure.Persistence.Configurations
                 .HasConversion<int>()
                 .IsRequired();
 
-            builder.Property(x => x.EmailConfirmed)
-                .IsRequired();
-
             builder.Property(x => x.RefreshToken)
                 .HasMaxLength(500);
 

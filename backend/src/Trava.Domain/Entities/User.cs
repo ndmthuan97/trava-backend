@@ -16,7 +16,6 @@ namespace Trava.Domain.Entities
         public Role Role { get; set; } = Role.User;
         public UserStatus Status { get; set; } = UserStatus.Active;
         public string Password { get; set; } = default!;
-        public bool EmailConfirmed { get; set; } = false;
         public string? RefreshToken { get; set; }
         public DateTimeOffset? RefreshTokenExpiryTime { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;

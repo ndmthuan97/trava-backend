@@ -36,7 +36,6 @@ namespace Trava.Infrastructure.Extensions
                 Password = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
                 Role = Role.SystemAdmin,
                 Status = UserStatus.Active,
-                EmailConfirmed = true,
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
@@ -48,7 +47,6 @@ namespace Trava.Infrastructure.Extensions
                 Password = BCrypt.Net.BCrypt.HashPassword("User@123"),
                 Role = Role.User,
                 Status = UserStatus.Active,
-                EmailConfirmed = true,
                 CreatedAt = DateTimeOffset.UtcNow
             };
 

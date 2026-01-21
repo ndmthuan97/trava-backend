@@ -289,9 +289,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("FullName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
