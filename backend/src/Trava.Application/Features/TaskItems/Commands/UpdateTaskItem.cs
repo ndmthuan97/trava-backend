@@ -25,9 +25,9 @@ namespace Trava.Application.Features.TaskItems.Commands
         DateTimeOffset? StartDate,
         DateTimeOffset? DueDate,
         Guid? AssignedUserId
-    ) : IRequest<Unit>;
+    ) : IRequest;
 
-    public class UpdateTaskItemCommandHandler : IRequestHandler<UpdateTaskItemCommand, Unit>
+    public class UpdateTaskItemCommandHandler : IRequestHandler<UpdateTaskItemCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -36,7 +36,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(UpdateTaskItemCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateTaskItemCommand request, CancellationToken cancellationToken)
         {
             var taskItemRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
             var taskItem = await taskItemRepo.GetByIdAsync(request.Id) ?? throw new AppException(CustomCode.TaskItemNotFound);
@@ -58,8 +58,6 @@ namespace Trava.Application.Features.TaskItems.Commands
 
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();
-
-            return Unit.Value;
         }
     }
 

@@ -10,9 +10,9 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public record DeleteTaskItemCommand(Guid Id, Guid UserId) : IRequest<Unit>;
+    public record DeleteTaskItemCommand(Guid Id, Guid UserId) : IRequest;
 
-    public class DeleteTaskItemCommandHandler : IRequestHandler<DeleteTaskItemCommand, Unit>
+    public class DeleteTaskItemCommandHandler : IRequestHandler<DeleteTaskItemCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -21,7 +21,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(DeleteTaskItemCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteTaskItemCommand request, CancellationToken cancellationToken)
         {
             var taskItemRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
             var spaceRepo = _unitOfWork.GetRepository<Space, Guid>();
@@ -61,8 +61,6 @@ namespace Trava.Application.Features.TaskItems.Commands
 
             taskItemRepo.Remove(taskItem);
             await _unitOfWork.CommitAsync();
-
-            return Unit.Value;
         }
     }
 }

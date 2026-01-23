@@ -13,16 +13,16 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public record AssigneTaskItemCommand([property: JsonIgnore] Guid Id, Guid AssignedUserId, [property: JsonIgnore] Guid CreatedBy) : IRequest<Unit>;
+    public record AssigneTaskItemCommand([property: JsonIgnore] Guid Id, Guid AssignedUserId, [property: JsonIgnore] Guid CreatedBy) : IRequest;
 
-    public class AssigneTaskItemCommandHandler : IRequestHandler<AssigneTaskItemCommand, Unit>
+    public class AssigneTaskItemCommandHandler : IRequestHandler<AssigneTaskItemCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
         public AssigneTaskItemCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Unit> Handle(AssigneTaskItemCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AssigneTaskItemCommand request, CancellationToken cancellationToken)
         {
             var taskItemRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
             var spaceRepo = _unitOfWork.GetRepository<Space, Guid>();
@@ -63,8 +63,6 @@ namespace Trava.Application.Features.TaskItems.Commands
 
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();
-
-            return Unit.Value;
         }
     }
 

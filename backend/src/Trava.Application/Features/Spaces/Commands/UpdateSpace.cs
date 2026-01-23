@@ -13,9 +13,9 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.Spaces.Commands
 {
-    public record UpdateSpaceCommand([property: JsonIgnore] Guid Id, string Name, string Description) : IRequest<Unit>;
+    public record UpdateSpaceCommand([property: JsonIgnore] Guid Id, string Name, string Description) : IRequest;
 
-    public class UpdateSpaceCommandHandler : IRequestHandler<UpdateSpaceCommand, Unit>
+    public class UpdateSpaceCommandHandler : IRequestHandler<UpdateSpaceCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -24,7 +24,7 @@ namespace Trava.Application.Features.Spaces.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(UpdateSpaceCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateSpaceCommand request, CancellationToken cancellationToken)
         {
             var _spaceRepository = _unitOfWork.GetRepository<Space, Guid>();
 
@@ -35,7 +35,6 @@ namespace Trava.Application.Features.Spaces.Commands
 
             _spaceRepository.Update(space);
             await _unitOfWork.CommitAsync();
-            return Unit.Value;
         }
     }
 

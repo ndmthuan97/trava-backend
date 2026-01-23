@@ -1,0 +1,65 @@
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Trava.API.Models;
+using Trava.Application.Features.Users.Commands;
+using Trava.Application.Features.Users.Queries;
+using Trava.Application.Features.Users.Responses;
+using Trava.Domain.Enums;
+using Trava.Shared.Enums;
+
+namespace Trava.API.Controllers
+{
+    [ApiController]
+    [Route("api/users")]
+    public class UserController : BaseController<UserController>
+    {
+        private readonly IMediator _mediator;
+
+        public UserController(IMediator mediator, ILogger<UserController> logger) : base(logger)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpGet("profile")]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+            {
+                return Respond(CustomCode.UserIdNotFound);
+            }
+
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetUserProfileQuery(userIdGuid)));
+            });
+        }
+
+        [HttpGet("{id:guid}/profile")]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProfileById([FromRoute] Guid id)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetUserProfileByIdQuery(id)));
+            });
+        }
+
+        [HttpPut("status/{id:guid}")]
+        [Authorize(Roles = nameof(Role.SystemAdmin))]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateUserStatus([FromRoute] Guid id, [FromBody] UpdateUserStatusCommand command)
+        {
+            return await HandleRequestAsync(() => _mediator.Send(command with { Id = id }), CustomCode.Updated);
+        }
+    }
+}

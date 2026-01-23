@@ -12,9 +12,9 @@ using Trava.Shared.Enums;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public record CompleteTaskItemCommand([property: JsonIgnore] Guid Id, [property: JsonIgnore] Guid CompletedBy) : IRequest<Unit>;
+    public record CompleteTaskItemCommand([property: JsonIgnore] Guid Id, [property: JsonIgnore] Guid CompletedBy) : IRequest;
 
-    public class CompleteTaskItemCommandHandler : IRequestHandler<CompleteTaskItemCommand, Unit>
+    public class CompleteTaskItemCommandHandler : IRequestHandler<CompleteTaskItemCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -23,7 +23,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(CompleteTaskItemCommand request, CancellationToken cancellationToken)
+        public async Task Handle(CompleteTaskItemCommand request, CancellationToken cancellationToken)
         {
             var taskItemRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
             var taskItem = await taskItemRepo.GetByIdAsync(request.Id) ?? throw new AppException(CustomCode.TaskItemNotFound);
@@ -36,8 +36,6 @@ namespace Trava.Application.Features.TaskItems.Commands
             taskItem.CompletedAt = DateTimeOffset.UtcNow;
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();
-
-            return Unit.Value;
         }
     }
 

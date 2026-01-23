@@ -18,11 +18,11 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
         [property: JsonIgnore] Guid Id,
         InvitationStatus InvitationStatus,
         [property: JsonIgnore] Guid InvitatedUser
-    ) : IRequest<Unit>;
+    ) : IRequest;
 
 
     public class UpdateStatusSpaceInvitationCommandHandler
-    : IRequestHandler<UpdateStatusSpaceInvitationCommand, Unit>
+    : IRequestHandler<UpdateStatusSpaceInvitationCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -31,7 +31,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Unit> Handle(UpdateStatusSpaceInvitationCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateStatusSpaceInvitationCommand request, CancellationToken cancellationToken)
         {
             var invitationRepo = _unitOfWork.GetRepository<SpaceInvitation, Guid>();
             var spaceMemberRepo = _unitOfWork.GetRepository<SpaceMember, (Guid SpaceId, Guid UserId)>();
@@ -64,8 +64,6 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             }
 
             await _unitOfWork.CommitAsync();
-
-            return Unit.Value;
         }
     }
     public class UpdateStatusSpaceInvitationCommandValidator : AbstractValidator<UpdateStatusSpaceInvitationCommand>
