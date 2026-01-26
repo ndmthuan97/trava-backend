@@ -58,6 +58,13 @@ namespace Trava.API.Controllers
             return await HandleRequestAsync(() => _authService.ChangePasswordAsync(dto));
         }
 
+        [HttpPost("refresh-token")]
+        [ProducesResponseType(typeof(ApiResponse<AuthResultDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+        {
+            return await HandleRequestAsync(() => _authService.RefreshTokenAsync(dto)); 
+        }
+
         [HttpPost("logout")]
         [Authorize]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]

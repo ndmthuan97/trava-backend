@@ -83,7 +83,7 @@ namespace Trava.Infrastructure.Services.Identify
             _unitOfWork.GetRepository<User, Guid>().Update(user);
             await _unitOfWork.CommitAsync();
 
-            await _tokenRegistryService.RegisterTokenAsync(user.Id.ToString(), accessToken, TimeSpan.FromSeconds(_jwtHandler.GetExpiryInSecond()));
+            await _tokenRegistryService.SaveRefreshTokenAsync(user.Id.ToString(), refreshToken, TimeSpan.FromDays(30));
 
             return new AuthResultDto
             {
@@ -94,6 +94,34 @@ namespace Trava.Infrastructure.Services.Identify
             };
         }
 
+        public async Task<(CustomCode, AuthResultDto)> RefreshTokenAsync(RefreshTokenRequestDto request)
+        {
+            var principal = _jwtHandler.GetPrincipalFromExpiredToken(request.AccessToken);
+            var userIdStr = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new AppException(CustomCode.InvalidToken);
+            if (!Guid.TryParse(userIdStr, out var userId)) throw new AppException(CustomCode.InvalidToken);
+
+            var user = await _unitOfWork.GetRepository<User, Guid>().GetByIdAsync(userId);
+
+            if (user == null || user.RefreshToken != request.RefreshToken ||
+                user.RefreshTokenExpiryTime <= DateTimeOffset.UtcNow)
+                throw new AppException(CustomCode.InvalidToken, new[] { "Refresh token is invalid or expired." });
+
+            var storedRefreshToken = await _tokenRegistryService.GetRefreshTokenAsync(userIdStr);
+            if (storedRefreshToken != request.RefreshToken)
+            {
+                _logger.LogWarning("Refresh token mismatch for user {UserId}. Session might have been revoked or taken over.", userIdStr);
+                throw new AppException(CustomCode.InvalidToken, new[] { "Session expired or invalid." });
+            }
+
+            if (user.Status != UserStatus.Active)
+            {
+                _logger.LogWarning("Attempt to login with locked account for email: {Email}.", user.Email);
+                throw new AppException(CustomCode.UserAccountLocked);
+            }
+
+            var authRespone = await GenerateToken(user, populateExp: false);
+            return (CustomCode.Success, authRespone);
+        }
 
         public async Task<CustomCode> RegisterAsync(RegisterRequestDto request)
         {
@@ -133,7 +161,7 @@ namespace Trava.Infrastructure.Services.Identify
                 userRepo.Update(user);
             }
 
-            await _tokenRegistryService.InvalidateTokenAsync(userId, accessToken);
+            await _tokenRegistryService.RevokeRefreshTokenAsync(userId);
 
             await _unitOfWork.CommitAsync();
         }
@@ -149,26 +177,18 @@ namespace Trava.Infrastructure.Services.Identify
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
 
+            if (request.LogoutBehavior == LogoutBehavior.LogoutAllIncludingCurrent)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = null;
+            }
+
             userRepo.Update(user);
             await _unitOfWork.CommitAsync();
 
-            switch (request.LogoutBehavior)
-            {
-                case LogoutBehavior.LogoutAllIncludingCurrent:
-                    await _tokenRegistryService.InvalidateAllTokensAsync(request.UserId.ToString());
-                    _logger.LogInformation("All tokens invalidated for user {UserId} after password change", request.UserId);
-                    break;
+            await _tokenRegistryService.RevokeRefreshTokenAsync(request.UserId.ToString());
+            _logger.LogInformation("RefreshToken revoked for user {UserId} after password change", request.UserId);
 
-                case LogoutBehavior.LogoutOthersOnly:
-                    var accessToken = request.CurrentAccessToken;
-                    await _tokenRegistryService.InvalidateOtherTokensAsync(request.UserId.ToString(), accessToken);
-                    _logger.LogInformation("All tokens except current invalidated for user {UserId}", request.UserId);
-                    break;
-
-                default:
-                    _logger.LogInformation("No session invalidated for user {UserId}", request.UserId);
-                    break;
-            }
 
             return CustomCode.Success;
         }

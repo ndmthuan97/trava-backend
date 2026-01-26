@@ -13,5 +13,6 @@ namespace Trava.Application.Interfaces.Services
         Task<(CustomCode, AuthResultDto)> LoginAsync(LoginRequestDto request);
         Task LogoutAsync(string userId, string accessToken);
         Task<CustomCode> ChangePasswordAsync(ChangePasswordRequestDto request);
+        Task<(CustomCode, AuthResultDto)> RefreshTokenAsync(RefreshTokenRequestDto request);
     }
 }

@@ -13,12 +13,12 @@ namespace Trava.Application.Features.Users.Queries
 {
     public record GetUserProfileQuery(Guid UserId) : IRequest<UserResponse>;
 
-    public class GetUserProfileHandler : IRequestHandler<GetUserProfileQuery, UserResponse>
+    public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, UserResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetUserProfileHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetUserProfileQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

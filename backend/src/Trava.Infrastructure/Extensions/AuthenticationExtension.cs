@@ -52,37 +52,6 @@ namespace Trava.Infrastructure.Extensions
                     NameClaimType = ClaimTypes.NameIdentifier,
                     RoleClaimType = ClaimTypes.Role
                 };
-                options.Events = new JwtBearerEvents
-                {
-                    // Add custom token validation for allowed tokens
-                    OnTokenValidated = async context =>
-                    {
-                        var tokenRegistryService = context.HttpContext.RequestServices
-                            .GetRequiredService<ITokenRegistryService>();
-
-                        var token = context.Request.Headers["Authorization"]
-                            .FirstOrDefault()?.Split(" ").Last();
-
-                        if (string.IsNullOrEmpty(token))
-                        {
-                            return;
-                        }
-
-                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        if (string.IsNullOrEmpty(userIdClaim))
-                        {
-                            context.Fail("User ID claim not found");
-                            return;
-                        }
-
-                        // Check if token is in the allowed list for the user
-                        if (!await tokenRegistryService.IsTokenAllowedAsync(userIdClaim, token))
-                        {
-                            context.Fail("Token has been revoked or session expired");
-                            return;
-                        }
-                    }
-                };
             });
             return services;
         }

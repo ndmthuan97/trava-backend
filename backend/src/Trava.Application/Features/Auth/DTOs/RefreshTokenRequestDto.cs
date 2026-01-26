@@ -1,0 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Trava.Application.Features.Auth.DTOs;
+
+public class RefreshTokenRequestDto
+{
+    [Required(ErrorMessage = "Access Token is required")]
+    public string AccessToken { get; set; }
+    
+    [Required(ErrorMessage = "Refresh Token is required")]
+    public string RefreshToken { get; set; }
+}
