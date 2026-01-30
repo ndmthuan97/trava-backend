@@ -60,16 +60,9 @@ namespace Trava.Infrastructure.Persistence.Configurations
                 .HasForeignKey(x => x.TaskItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne(x => x.ParentTask)
-                .WithMany(x => x.SubTasks)
-                .HasForeignKey(x => x.ParentTaskId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasIndex(x => x.SpaceId);
 
             builder.HasIndex(x => x.AssignedUserId);
-
-            builder.HasIndex(x => x.ParentTaskId);
 
             builder.HasIndex(x => new { x.SpaceId, x.Title }).IsUnique();
         }

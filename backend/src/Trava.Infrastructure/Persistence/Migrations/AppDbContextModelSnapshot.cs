@@ -225,9 +225,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("DueDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ParentTaskId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("Point")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -259,8 +256,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedUserId");
-
-                    b.HasIndex("ParentTaskId");
 
                     b.HasIndex("SpaceId");
 
@@ -422,11 +417,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasForeignKey("AssignedUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Trava.Domain.Entities.TaskItem", "ParentTask")
-                        .WithMany("SubTasks")
-                        .HasForeignKey("ParentTaskId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Trava.Domain.Entities.Space", "Space")
                         .WithMany("TaskItems")
                         .HasForeignKey("SpaceId")
@@ -434,8 +424,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("AssignedUser");
-
-                    b.Navigation("ParentTask");
 
                     b.Navigation("Space");
                 });
@@ -474,8 +462,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Trava.Domain.Entities.TaskItem", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("SubTasks");
                 });
 
             modelBuilder.Entity("Trava.Domain.Entities.User", b =>

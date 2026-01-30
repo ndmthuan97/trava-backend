@@ -161,7 +161,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SpaceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ParentTaskId = table.Column<Guid>(type: "uuid", nullable: true),
                     Title = table.Column<string>(type: "citext", maxLength: 300, nullable: false),
                     Description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
@@ -188,12 +187,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         principalTable: "Spaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskItems_TaskItems_ParentTaskId",
-                        column: x => x.ParentTaskId,
-                        principalTable: "TaskItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TaskItems_Users_AssignedUserId",
                         column: x => x.AssignedUserId,
@@ -279,11 +272,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 name: "IX_TaskItems_AssignedUserId",
                 table: "TaskItems",
                 column: "AssignedUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskItems_ParentTaskId",
-                table: "TaskItems",
-                column: "ParentTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskItems_SpaceId",

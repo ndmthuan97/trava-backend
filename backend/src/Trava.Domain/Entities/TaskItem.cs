@@ -10,7 +10,6 @@ namespace Trava.Domain.Entities
     public class TaskItem : BaseTimeEntity<Guid>
     {
         public Guid SpaceId { get; set; }
-        public Guid? ParentTaskId { get; set; } = null;
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
         public TaskItemStatus Status { get; set; } = TaskItemStatus.NotStart;
@@ -26,7 +25,5 @@ namespace Trava.Domain.Entities
         public virtual Space Space { get; set; } = default!;
         public virtual User? AssignedUser { get; set; } = null;
         public virtual ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
-        public virtual ICollection<TaskItem> SubTasks { get; set; } = new List<TaskItem>();
-        public virtual TaskItem? ParentTask { get; set; } = null;
     }
 }
