@@ -37,6 +37,21 @@ namespace Trava.API.Controllers
             });
         }
 
+        [HttpGet("my-spaces")]
+        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<List<SpaceResponse>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMySpaces()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetSpacesByUserQuery(userIdGuid)));
+            });
+        }
+
         [HttpGet("{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
