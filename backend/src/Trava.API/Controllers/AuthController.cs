@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trava.API.Models;
-using Trava.Application.Features.Auth.DTOs;
-using Trava.Application.Interfaces.Services;
+using Trava.Application.Features.Auth.Commands;
+using Trava.Application.Features.Auth.Responses;
 using Trava.Shared.Enums;
 
 namespace Trava.API.Controllers
@@ -16,30 +16,31 @@ namespace Trava.API.Controllers
     [Route("api/auths")]
     public class AuthController : BaseController<AuthController>
     {
-        private readonly IAuthService _authService;
-        public AuthController(IAuthService authService, ILogger<AuthController> logger) : base(logger)
+        private readonly IMediator _mediator;
+
+        public AuthController(IMediator mediator, ILogger<AuthController> logger) : base(logger)
         {
-            _authService = authService;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
-            return await HandleRequestAsync(() => _authService.RegisterAsync(request));
+            return await HandleRequestAsync(() => _mediator.Send(command));
         }
 
         [HttpPost("login")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+        public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
-            return await HandleRequestAsync(() => _authService.LoginAsync(request));
+            return await HandleRequestAsync(() => _mediator.Send(command));
         }
 
         [HttpPost("change-password")]
         [Authorize]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out var id))
@@ -47,22 +48,23 @@ namespace Trava.API.Controllers
                 return Respond(CustomCode.UserIdNotFound);
             }
 
-            dto.UserId = id;
             var token = Request.Headers.Authorization.FirstOrDefault()?.Replace("Bearer ", "").Trim();
             if (string.IsNullOrWhiteSpace(token))
             {
                 return Respond(CustomCode.AccessTokenInvalidOrExpired);
             }
 
-            dto.CurrentAccessToken = token;
-            return await HandleRequestAsync(() => _authService.ChangePasswordAsync(dto));
+            // Populate JsonIgnored properties
+            command = command with { UserId = id, CurrentAccessToken = token };
+
+            return await HandleRequestAsync(() => _mediator.Send(command));
         }
 
         [HttpPost("refresh-token")]
-        [ProducesResponseType(typeof(ApiResponse<AuthResultDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+        [ProducesResponseType(typeof(ApiResponse<AuthResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
-            return await HandleRequestAsync(() => _authService.RefreshTokenAsync(dto)); 
+            return await HandleRequestAsync(() => _mediator.Send(command));
         }
 
         [HttpPost("logout")]
@@ -76,7 +78,12 @@ namespace Trava.API.Controllers
                 return Respond(CustomCode.UserIdNotFound);
             }
             var token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-            return await HandleRequestAsync(() => _authService.LogoutAsync(userId, token));
+
+            var command = new LogoutCommand(userId, token);
+            return await HandleRequestAsync(async () =>
+            {
+                await _mediator.Send(command);
+            });
         }
     }
 }

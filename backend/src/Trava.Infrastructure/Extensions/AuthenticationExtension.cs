@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Trava.Application.Interfaces.Services;
 using Trava.Infrastructure.Services.Identify;
-using Trava.Infrastructure.Services.Identify.Interfaces;
+
 
 namespace Trava.Infrastructure.Extensions
 {
@@ -19,8 +19,7 @@ namespace Trava.Infrastructure.Extensions
     {
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<JwtHandler>();
-            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<ITokenRegistryService, TokenRegistryService>();
 
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()!;

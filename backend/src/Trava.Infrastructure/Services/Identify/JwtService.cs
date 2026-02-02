@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using Trava.Application.Common.Exceptions;
 using Trava.Shared.Enums;
 
+using Trava.Application.Interfaces.Services;
+
 namespace Trava.Infrastructure.Services.Identify
 {
     public class JwtSettings
@@ -21,13 +23,13 @@ namespace Trava.Infrastructure.Services.Identify
         public int ExpiryInSecond { get; set; }
     }
 
-    public sealed class JwtHandler
+    public sealed class JwtService : IJwtService
     {
         private readonly JwtSettings _settings;
-        private readonly ILogger<JwtHandler> _logger;
+        private readonly ILogger<JwtService> _logger;
         private readonly SymmetricSecurityKey _signingKey;
 
-        public JwtHandler(IOptions<JwtSettings> options, ILogger<JwtHandler> logger)
+        public JwtService(IOptions<JwtSettings> options, ILogger<JwtService> logger)
         {
             _settings = options.Value;
             _logger = logger;

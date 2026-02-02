@@ -1,24 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Trava.Domain.Entities;
 
-namespace Trava.Infrastructure.Services.Identify
+namespace Trava.Application.Common.Helpers
 {
     public static class TokenHelper
     {
         public static List<Claim> GetClaims(User user, IList<Claim> userClaims)
         {
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Email, user.Email!),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
-        };
+            {
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
             claims.AddRange(userClaims);
             return claims;
         }

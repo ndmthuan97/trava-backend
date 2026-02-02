@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Trava.Infrastructure.Services.Identify.Interfaces
+namespace Trava.Application.Interfaces.Services
 {
     public interface ITokenRegistryService
     {
