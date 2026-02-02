@@ -45,9 +45,11 @@ namespace Trava.Application.Features.Spaces.Specifications
 
             return sortBy switch
             {
-                "name" => isDescending ? q => q.OrderByDescending(x => x.Name) : q => q.OrderBy(x => x.Name),
+                "name" => isDescending ? q => q.OrderByDescending(x => x.Name) : 
+                    q => q.OrderBy(x => x.Name),
 
-                "spacetype" => isDescending ? q => q.OrderByDescending(x => x.SpaceType) : q => q.OrderBy(x => x.SpaceType),
+                "spacetype" => isDescending ? q => q.OrderByDescending(x => x.SpaceType) : 
+                    q => q.OrderBy(x => x.SpaceType),
 
                 _ => null
             };

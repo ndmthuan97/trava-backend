@@ -3,9 +3,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trava.API.Models;
+using Trava.Application.Common.Models;
 using Trava.Application.Features.Users.Commands;
 using Trava.Application.Features.Users.Queries;
 using Trava.Application.Features.Users.Responses;
+using Trava.Application.Features.Users.Specifications;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
 
@@ -20,6 +22,17 @@ namespace Trava.API.Controllers
         public UserController(IMediator mediator, ILogger<UserController> logger) : base(logger)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet()]
+        [Authorize(Roles = nameof(Role.SystemAdmin))]
+        [ProducesResponseType(typeof(Pagination<UserResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetUsers([FromQuery] UserSpecParam param)
+        {
+            return await HandleRequestAsync( async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetUsersQuery(param)));
+            });
         }
 
         [HttpGet("profile")]
