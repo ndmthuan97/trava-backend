@@ -11,7 +11,7 @@ namespace Trava.Domain.Entities
     {
         public Guid SpaceId { get; set; }
         public Guid InvitedUserId { get; set; }
-        public Role Role { get; set; } = Role.Member;
+        public SpaceRole SpaceRole { get; set; } = SpaceRole.Member;
         public InvitationStatus Status { get; set; } = InvitationStatus.Pending;
         public DateTime? ExpiredAt { get; set; }
 

@@ -107,11 +107,11 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("InvitedUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
                     b.Property<Guid>("SpaceId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("SpaceRole")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

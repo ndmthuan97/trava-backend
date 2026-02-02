@@ -27,7 +27,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSpaces([FromQuery] SpaceSpecParam param)
         {
@@ -38,7 +38,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet("my-spaces")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<List<SpaceResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMySpaces()
         {
@@ -53,7 +53,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSpaceById([FromRoute] Guid id)
         {
@@ -64,7 +64,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateSpace([FromBody] CreateSpaceCommand command)
         {

@@ -16,7 +16,7 @@ namespace Trava.Infrastructure.Persistence.Configurations
             builder.Property(x => x.InvitedUserId)
                 .IsRequired();
 
-            builder.Property(x => x.Role)
+            builder.Property(x => x.SpaceRole)
                 .IsRequired();
 
             builder.Property(x => x.Status)

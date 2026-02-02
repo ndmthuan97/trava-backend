@@ -35,7 +35,7 @@ namespace Trava.Application.Common.Mappings
             CreateMap<CreateSpaceInvitationCommand, SpaceInvitation>();
             CreateMap<SpaceInvitation, SpaceInvitationResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.SpaceRole.ToString()));
 
             CreateMap<User, UserResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))

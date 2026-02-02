@@ -26,7 +26,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTaskItems([FromQuery] TaskItemSpecParam param)
         {
@@ -37,7 +37,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTaskItemById([FromRoute] Guid id)
         {
@@ -48,7 +48,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CompleteTaskItem([FromBody] CreateTaskItemCommand command)
         {
@@ -61,7 +61,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateTaskItem([FromRoute] Guid id, [FromBody] UpdateTaskItemCommand command)
         {
@@ -74,7 +74,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPut("complete/{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CompleteTaskItem([FromRoute] Guid id)
         {
@@ -87,7 +87,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPatch("assigne/{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> AssigneTaskItem([FromRoute] Guid id, [FromBody] AssigneTaskItemCommand command)
         {
@@ -100,7 +100,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteTaskItem([FromRoute] Guid id)
         {

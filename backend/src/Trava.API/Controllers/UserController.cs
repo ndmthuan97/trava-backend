@@ -25,7 +25,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet()]
-        [Authorize(Roles = nameof(Role.SystemAdmin))]
+        [Authorize(Roles = nameof(Role.Admin))]
         [ProducesResponseType(typeof(Pagination<UserResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsers([FromQuery] UserSpecParam param)
         {
@@ -36,7 +36,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet("profile")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProfile()
         {
@@ -53,7 +53,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpGet("profile/{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProfileById([FromRoute] Guid id)
         {
@@ -64,7 +64,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPut("status/{id:guid}")]
-        [Authorize(Roles = nameof(Role.SystemAdmin))]
+        [Authorize(Roles = nameof(Role.Admin))]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateUserStatus([FromRoute] Guid id, [FromBody] UpdateUserStatusCommand command)
         {

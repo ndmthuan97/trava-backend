@@ -34,7 +34,7 @@ namespace Trava.Infrastructure.Extensions
                 Email = "thuanndmqe170240@fpt.edu.vn",
                 FullName = "Thuan Nguyen Dao Minh",
                 Password = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-                Role = Role.SystemAdmin,
+                Role = Role.Admin,
                 Status = UserStatus.Active,
                 CreatedAt = DateTimeOffset.UtcNow
             };

@@ -24,7 +24,7 @@ namespace Trava.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{nameof(Role.SystemAdmin)},{nameof(Role.User)}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateSpaceInvitation([FromBody] CreateSpaceInvitationCommand command)
         {
