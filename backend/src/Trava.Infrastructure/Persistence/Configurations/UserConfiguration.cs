@@ -17,6 +17,11 @@ namespace Trava.Infrastructure.Persistence.Configurations
             builder.Property(x => x.FullName)
                 .HasMaxLength(200);
 
+            builder.Property(x => x.Phone)
+                .HasMaxLength(20);
+
+            builder.Property(x => x.BirthDate);
+
             builder.Property(x => x.Email)
                 .IsRequired()
                 .HasMaxLength(255);

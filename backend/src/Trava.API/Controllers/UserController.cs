@@ -70,5 +70,19 @@ namespace Trava.API.Controllers
         {
             return await HandleRequestAsync(() => _mediator.Send(command with { Id = id }), CustomCode.Updated);
         }
+
+        [HttpPut("profile")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileCommand command)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+            {
+                return Respond(CustomCode.UserIdNotFound);
+            }
+
+            return await HandleRequestAsync(() => _mediator.Send(command with { Id = userIdGuid }), CustomCode.Updated);
+        }
     }
 }

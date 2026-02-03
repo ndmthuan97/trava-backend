@@ -9,7 +9,7 @@ namespace Trava.Application.Features.Users.Specifications;
 
 public class UserSpecParam : BaseSpecParam
 {
-    
+
 }
 
 public class UserSpecification : ISpecification<User>
@@ -25,7 +25,7 @@ public class UserSpecification : ISpecification<User>
 
     public UserSpecification(UserSpecParam param)
     {
-        Criteria =  BuildCriteria(param);
+        Criteria = BuildCriteria(param);
         OrderBy = BuildOrderBy(param);
         Skip = (param.PageIndex - 1) * param.PageSize;
         Take = param.PageSize;
@@ -47,7 +47,7 @@ public class UserSpecification : ISpecification<User>
 
         return sortedBy switch
         {
-            "name" => isDescending ? u => u.OrderByDescending(x => x.FullName) : 
+            "name" => isDescending ? u => u.OrderByDescending(x => x.FullName) :
                 u => u.OrderBy(x => x.FullName),
             _ => null
         };

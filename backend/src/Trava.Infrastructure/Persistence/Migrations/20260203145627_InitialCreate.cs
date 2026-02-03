@@ -37,6 +37,8 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     AvatarUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
+                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Password = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     RefreshToken = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),

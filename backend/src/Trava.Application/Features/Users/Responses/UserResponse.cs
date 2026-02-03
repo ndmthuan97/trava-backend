@@ -10,6 +10,8 @@ namespace Trava.Application.Features.Users.Responses
         string AvatarUrl,
         string Role,
         string Status,
+        string? Phone,
+        DateTime? BirthDate,
         DateTimeOffset CreatedAt,
         DateTimeOffset? LastLoginAt
     );

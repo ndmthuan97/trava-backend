@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260202150817_InitialCreate")]
+    [Migration("20260203145627_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -279,6 +279,9 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -301,6 +304,10 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(500)
