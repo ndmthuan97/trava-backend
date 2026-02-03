@@ -24,7 +24,6 @@ namespace Trava.Application.Features.TaskItems.Commands
         int Point,
         DateTimeOffset? StartDate,
         DateTimeOffset? DueDate,
-        Guid? ParentTaskId,
         Guid? AssignedUserId,
         [property: JsonIgnore] Guid CreatedBy
     ) : IRequest<TaskItemResponse>;
@@ -121,19 +120,6 @@ namespace Trava.Application.Features.TaskItems.Commands
                     })
                     .WithErrorCode(CustomCode.AssignedUserNotInSpace.ToString())
                     .WithMessage("Assigned user does not belong to this space.");
-            });
-
-
-            When(x => x.ParentTaskId.HasValue, () =>
-            {
-                RuleFor(x => x)
-                    .MustAsync(async (cmd, ct) =>
-                    {
-                        var parent = await taskItemRepo.GetByIdAsync(cmd.ParentTaskId!.Value);
-                        return parent != null && parent.SpaceId == cmd.SpaceId;
-                    })
-                    .WithErrorCode(CustomCode.ParentTaskItemNotExistInSpace.ToString())
-                    .WithMessage("Parent task does not belong to this space.");
             });
         }
     }

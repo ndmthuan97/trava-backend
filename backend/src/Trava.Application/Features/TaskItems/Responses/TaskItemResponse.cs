@@ -5,7 +5,6 @@ namespace Trava.Application.Features.TaskItems.Responses
     public record TaskItemResponse(
         Guid Id,
         Guid SpaceId,
-        Guid? ParentTaskId,
         string Title,
         string Description,
         string Status,

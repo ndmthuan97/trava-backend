@@ -34,7 +34,7 @@ namespace Trava.Application.Features.TaskItems.Specifications
 
         private static Func<IQueryable<TaskItem>, IOrderedQueryable<TaskItem>>? BuildOrderBy(TaskItemSpecParam param)
         {
-            if (string.IsNullOrWhiteSpace(param.SortBy)) return q => q.OrderByDescending(x => x.CreatedAt); // Default sort
+            if (string.IsNullOrWhiteSpace(param.SortBy)) return q => q.OrderByDescending(x => x.CreatedAt);
 
             bool isDescending = param.SortDirection?.ToLower() == "desc";
             string sortBy = param.SortBy.ToLower();
