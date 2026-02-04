@@ -18,7 +18,7 @@ namespace Trava.Application.Features.Spaces.Commands
 {
     public record CreateSpaceCommand(
         string Name,
-        string Description,
+        string? Description,
         SpaceType SpaceType,
         [property: JsonIgnore] Guid CreatedBy
     ) : IRequest<SpaceResponse>;

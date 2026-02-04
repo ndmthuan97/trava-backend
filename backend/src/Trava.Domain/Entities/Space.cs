@@ -10,7 +10,7 @@ namespace Trava.Domain.Entities
     public class Space : BaseTimeEntity<Guid>
     {
         public string Name { get; set; } = default!;
-        public string Description { get; set; } = default!;
+        public string? Description { get; set; }
         public SpaceType SpaceType { get; set; } = SpaceType.Personal;
 
         // Navigation properties
