@@ -79,12 +79,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, (CustomCode, Au
 
         await _tokenRegistryService.SaveRefreshTokenAsync(user.Id.ToString(), refreshToken, TimeSpan.FromDays(30));
 
-        return new AuthResponse(
-            accessToken,
-            refreshToken,
-            _jwtService.GetExpiryInSecond(),
-            claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? user.Email
-        );
+        return new AuthResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            ExpiresIn = _jwtService.GetExpiryInSecond(),
+            Email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? user.Email
+        };
     }
 }
 

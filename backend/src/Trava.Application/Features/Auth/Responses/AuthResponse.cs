@@ -1,8 +1,9 @@
 namespace Trava.Application.Features.Auth.Responses;
 
-public record AuthResponse(
-    string AccessToken,
-    string RefreshToken,
-    int ExpiresIn,
-    string? Email
-);
+public record AuthResponse
+{
+    public string AccessToken { get; init; } = default!;
+    public string RefreshToken { get; init; } = default!;
+    public int ExpiresIn { get; init; }
+    public string? Email { get; init; }
+}

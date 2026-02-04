@@ -25,7 +25,8 @@ namespace Trava.Application.Common.Mappings
 
             CreateMap<CreateSpaceCommand, Space>();
             CreateMap<Space, SpaceResponse>()
-                .ForMember(dest => dest.SpaceType, opt => opt.MapFrom(src => src.SpaceType.ToString()));
+                .ForMember(dest => dest.SpaceType, opt => opt.MapFrom(src => src.SpaceType.ToString()))
+                .ForMember(dest => dest.CountMember, opt => opt.MapFrom(src => src.Members.Count));
 
             CreateMap<CreateTaskItemCommand, TaskItem>();
             CreateMap<TaskItem, TaskItemResponse>()

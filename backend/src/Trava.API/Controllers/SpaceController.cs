@@ -10,6 +10,7 @@ using Trava.API.Models;
 using Trava.Application.Features.Spaces.Commands;
 using Trava.Application.Features.Spaces.Queries;
 using Trava.Application.Features.Spaces.Responses;
+using Trava.Application.Common.Models;
 using Trava.Application.Features.Spaces.Specifications;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
@@ -39,16 +40,17 @@ namespace Trava.API.Controllers
 
         [HttpGet("my-spaces")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        [ProducesResponseType(typeof(ApiResponse<List<SpaceResponse>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetMySpaces()
+        [ProducesResponseType(typeof(ApiResponse<Pagination<SpaceResponse>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMySpaces([FromQuery] SpaceSpecParam param)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
+            param.UserId = userIdGuid;
             return await HandleRequestAsync(async () =>
             {
-                return (CustomCode.Success, await _mediator.Send(new GetSpacesByUserQuery(userIdGuid)));
+                return (CustomCode.Success, await _mediator.Send(new GetSpacesByUserQuery(param)));
             });
         }
 

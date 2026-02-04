@@ -11,7 +11,7 @@ namespace Trava.Application.Features.Spaces.Specifications
 {
     public class SpaceSpecParam : BaseSpecParam
     {
-
+        public Guid? UserId { get; set; }
     }
 
     public class SpaceSpecification : ISpecification<Space>
@@ -29,11 +29,14 @@ namespace Trava.Application.Features.Spaces.Specifications
             OrderBy = BuildOrderBy(param);
             Skip = (param.PageIndex - 1) * param.PageSize;
             Take = param.PageSize;
+            Includes.Add(x => x.Members);
         }
 
         private static Expression<Func<Space, bool>> BuildCriteria(SpaceSpecParam param)
         {
-            return s => string.IsNullOrWhiteSpace(param.SearchTerm) || EF.Functions.ILike(s.Name, $"%{param.SearchTerm}%");
+            return s => (string.IsNullOrWhiteSpace(param.SearchTerm) ||
+                        EF.Functions.ILike(s.Name, $"%{param.SearchTerm}%")) &&
+                        (!param.UserId.HasValue || (s.CreatedBy == param.UserId.Value || s.Members.Any(sm => sm.UserId == param.UserId.Value)));
 
         }
         private static Func<IQueryable<Space>, IOrderedQueryable<Space>>? BuildOrderBy(SpaceSpecParam param)
@@ -45,10 +48,10 @@ namespace Trava.Application.Features.Spaces.Specifications
 
             return sortBy switch
             {
-                "name" => isDescending ? q => q.OrderByDescending(x => x.Name) : 
+                "name" => isDescending ? q => q.OrderByDescending(x => x.Name) :
                     q => q.OrderBy(x => x.Name),
 
-                "spacetype" => isDescending ? q => q.OrderByDescending(x => x.SpaceType) : 
+                "spacetype" => isDescending ? q => q.OrderByDescending(x => x.SpaceType) :
                     q => q.OrderBy(x => x.SpaceType),
 
                 _ => null
