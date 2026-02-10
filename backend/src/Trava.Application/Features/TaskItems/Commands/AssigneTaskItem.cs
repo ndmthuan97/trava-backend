@@ -10,6 +10,7 @@ using Trava.Application.Interfaces;
 using Trava.Domain.Entities;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
+using Trava.Application.Interfaces.Services;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
@@ -18,9 +19,11 @@ namespace Trava.Application.Features.TaskItems.Commands
     public class AssigneTaskItemCommandHandler : IRequestHandler<AssigneTaskItemCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public AssigneTaskItemCommandHandler(IUnitOfWork unitOfWork)
+        private readonly IHubNotificationService _hubNotificationService;
+        public AssigneTaskItemCommandHandler(IUnitOfWork unitOfWork, IHubNotificationService hubNotificationService)
         {
             _unitOfWork = unitOfWork;
+            _hubNotificationService = hubNotificationService;
         }
         public async Task Handle(AssigneTaskItemCommand request, CancellationToken cancellationToken)
         {
@@ -63,6 +66,16 @@ namespace Trava.Application.Features.TaskItems.Commands
 
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();
+
+            await _hubNotificationService.SendNotificationToUserAsync(
+                request.AssignedUserId,
+                "TaskAssigned",
+                new
+                {
+                    TaskId = taskItem.Id,
+                    Title = taskItem.Title,
+                    Message = $"You have been assigned a new task: {taskItem.Title}"
+                });
         }
     }
 

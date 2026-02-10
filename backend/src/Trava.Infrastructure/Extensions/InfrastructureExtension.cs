@@ -46,6 +46,8 @@ namespace Trava.Infrastructure.Extensions
                 client.Timeout = TimeSpan.FromSeconds(10);
             });
 
+            services.AddScoped<IHubNotificationService, HubNotificationService>();
+
             return services;
         }
     }

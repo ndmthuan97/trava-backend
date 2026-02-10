@@ -84,16 +84,16 @@ namespace Trava.API.Controllers
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
-        [HttpPut("complete/{id:guid}")]
+        [HttpPut("status/{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CompleteTaskItem([FromRoute] Guid id)
+        public async Task<IActionResult> StatusTaskItem([FromRoute] Guid id, [FromBody] StatusTaskItemCommand command)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            var command = new CompleteTaskItemCommand(id, userIdGuid);
+            command = command with { Id = id, CompletedBy = userIdGuid };
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 

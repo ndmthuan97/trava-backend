@@ -51,6 +51,25 @@ namespace Trava.Infrastructure.Extensions
                     NameClaimType = ClaimTypes.NameIdentifier,
                     RoleClaimType = ClaimTypes.Role
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        Console.WriteLine($"[Auth] Processing MessageReceived. Path: {path}, Token found: {!string.IsNullOrEmpty(accessToken)}");
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/hubs")))
+                        {
+                            context.Token = accessToken;
+                            Console.WriteLine("[Auth] Token extracted from query string.");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
             return services;
         }

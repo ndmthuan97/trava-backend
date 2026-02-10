@@ -7,6 +7,8 @@ using Trava.API.Middlewares;
 using Trava.Application.Extensions;
 using Trava.Infrastructure.Extensions;
 using Trava.Infrastructure.Services.Identify;
+using Trava.API.Hubs;
+using Trava.Application.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,12 @@ builder.Services.AddControllers()
     {
         apm.FeatureProviders.Add(new ControllerFeatureProvider());
     });
+
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
+builder.Services.AddSingleton<INotificationHub, SignalRNotificationHub>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -90,5 +98,8 @@ app.UseAuthorization();
 app.UseRateLimiter();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/hubs/notification");
+app.MapHub<TaskItemStatusHub>("/hubs/taskitemstatus");
 
 await app.RunAsync();

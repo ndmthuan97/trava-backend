@@ -12,6 +12,7 @@ using Trava.Application.Features.Spaces.Queries;
 using Trava.Application.Features.Spaces.Responses;
 using Trava.Application.Common.Models;
 using Trava.Application.Features.Spaces.Specifications;
+using Trava.Application.Features.Users.Responses;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
 
@@ -62,6 +63,17 @@ namespace Trava.API.Controllers
             return await HandleRequestAsync(async () =>
             {
                 return (CustomCode.Success, await _mediator.Send(new GetSpaceByIdQuery(id)));
+            });
+        }
+
+        [HttpGet("members")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<Pagination<UserResponse>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetSpaceMembers([FromQuery] SpaceMemberSpecParam param)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetSpaceMembersQuery(param)));
             });
         }
 
