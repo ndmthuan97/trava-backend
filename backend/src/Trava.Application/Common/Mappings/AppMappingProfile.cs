@@ -25,22 +25,15 @@ namespace Trava.Application.Common.Mappings
 
             CreateMap<CreateSpaceCommand, Space>();
             CreateMap<Space, SpaceResponse>()
-                .ForMember(dest => dest.SpaceType, opt => opt.MapFrom(src => src.SpaceType.ToString()))
                 .ForMember(dest => dest.CountMember, opt => opt.MapFrom(src => src.Members.Count));
 
             CreateMap<CreateTaskItemCommand, TaskItem>();
-            CreateMap<TaskItem, TaskItemResponse>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority.ToString()));
+            CreateMap<TaskItem, TaskItemResponse>();
 
             CreateMap<CreateSpaceInvitationCommand, SpaceInvitation>();
-            CreateMap<SpaceInvitation, SpaceInvitationResponse>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.SpaceRole.ToString()));
+            CreateMap<SpaceInvitation, SpaceInvitationResponse>();
 
-            CreateMap<User, UserResponse>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
+            CreateMap<User, UserResponse>();
         }
     }
 }
