@@ -11,6 +11,7 @@ namespace Trava.Application.Features.TaskItems.Specifications
     public class TaskItemSpecParam : BaseSpecParam
     {
         public Guid SpaceId { get; set; }
+        public Guid? AssignedUserId { get; set; }
     }
 
     public class TaskItemSpecification : ISpecification<TaskItem>
@@ -25,7 +26,8 @@ namespace Trava.Application.Features.TaskItems.Specifications
         public TaskItemSpecification(TaskItemSpecParam param)
         {
             Criteria = x => x.SpaceId == param.SpaceId &&
-                            (string.IsNullOrWhiteSpace(param.SearchTerm) || x.Title.Contains(param.SearchTerm));
+                            (string.IsNullOrWhiteSpace(param.SearchTerm) || x.Title.Contains(param.SearchTerm)) &&
+                            (!param.AssignedUserId.HasValue || x.AssignedUserId == param.AssignedUserId);
 
             OrderBy = BuildOrderBy(param);
             Skip = (param.PageIndex - 1) * param.PageSize;

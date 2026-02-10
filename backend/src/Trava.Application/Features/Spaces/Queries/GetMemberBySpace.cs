@@ -27,11 +27,6 @@ namespace Trava.Application.Features.Spaces.Queries
         {
             var spec = new SpaceMemberSpecification(request.Param);
             var result = await _unitOfWork.GetRepository<User, Guid>().GetWithSpecAsync(spec);
-            
-            // Map User to UserResponse
-            // Assuming Mapper Configuration exists for User -> UserResponse, or we project manually if needed.
-            // Using AutoMapper ProjectTo or Map.
-            
             return _mapper.Map<Pagination<UserResponse>>(result);
         }
     }
