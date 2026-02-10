@@ -9,8 +9,8 @@ namespace Trava.Application.Features.Users.Responses
         public string FullName { get; init; } = default!;
         public string Email { get; init; } = default!;
         public string AvatarUrl { get; init; } = default!;
-        public string Role { get; init; } = default!;
-        public string Status { get; init; } = default!;
+        public Role Role { get; init; }
+        public UserStatus Status { get; init; }
         public string? Phone { get; init; }
         public DateTime? BirthDate { get; init; }
         public DateTimeOffset CreatedAt { get; init; }
