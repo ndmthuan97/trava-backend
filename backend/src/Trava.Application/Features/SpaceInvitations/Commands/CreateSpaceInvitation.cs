@@ -11,6 +11,7 @@ using Trava.Application.Features.Spaces.Responses;
 using Trava.Application.Interfaces;
 using Trava.Domain.Entities;
 using Trava.Domain.Enums;
+using Trava.Application.Interfaces.Services;
 
 namespace Trava.Application.Features.SpaceInvitations.Commands
 {
@@ -24,20 +25,42 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHubNotificationService _hubNotificationService;
 
-        public CreateSpaceInvitationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public CreateSpaceInvitationCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IHubNotificationService hubNotificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _hubNotificationService = hubNotificationService;
         }
 
         public async Task<SpaceInvitationResponse> Handle(CreateSpaceInvitationCommand request, CancellationToken cancellationToken)
         {
             var spaceInvitationRepo = _unitOfWork.GetRepository<SpaceInvitation, Guid>();
+            var spaceRepo = _unitOfWork.GetRepository<Space, Guid>();
+            var userRepo = _unitOfWork.GetRepository<User, Guid>();
 
             var spaceInvitaion = _mapper.Map<SpaceInvitation>(request);
             await spaceInvitationRepo.AddAsync(spaceInvitaion);
             await _unitOfWork.CommitAsync();
+
+            // Send Notification
+            var space = await spaceRepo.GetByIdAsync(request.SpaceId);
+            if (space != null)
+            {
+                var owner = await userRepo.GetByIdAsync(space.CreatedBy);
+                var ownerEmail = owner?.Email ?? "A workspace owner";
+
+                await _hubNotificationService.SendNotificationToUserAsync(
+                    request.InvitedUserId,
+                    "SpaceInvited",
+                    new
+                    {
+                        SpaceId = space.Id,
+                        SpaceName = space.Name,
+                        Message = $"You have been invited to join space {space.Name} by {ownerEmail}"
+                    });
+            }
 
             return _mapper.Map<SpaceInvitationResponse>(spaceInvitaion);
         }

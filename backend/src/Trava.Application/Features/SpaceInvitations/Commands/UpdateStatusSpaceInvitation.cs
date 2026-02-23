@@ -10,6 +10,7 @@ using Trava.Application.Interfaces;
 using Trava.Domain.Entities;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
+using Trava.Application.Interfaces.Services;
 
 namespace Trava.Application.Features.SpaceInvitations.Commands
 {
@@ -25,16 +26,20 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
     : IRequestHandler<UpdateStatusSpaceInvitationCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHubNotificationService _hubNotificationService;
 
-        public UpdateStatusSpaceInvitationCommandHandler(IUnitOfWork unitOfWork)
+        public UpdateStatusSpaceInvitationCommandHandler(IUnitOfWork unitOfWork, IHubNotificationService hubNotificationService)
         {
             _unitOfWork = unitOfWork;
+            _hubNotificationService = hubNotificationService;
         }
 
         public async Task Handle(UpdateStatusSpaceInvitationCommand request, CancellationToken cancellationToken)
         {
             var invitationRepo = _unitOfWork.GetRepository<SpaceInvitation, Guid>();
             var spaceMemberRepo = _unitOfWork.GetRepository<SpaceMember, (Guid SpaceId, Guid UserId)>();
+            var spaceRepo = _unitOfWork.GetRepository<Space, Guid>();
+            var userRepo = _unitOfWork.GetRepository<User, Guid>();
 
             var invitation = await invitationRepo.GetByIdAsync(request.Id)
                 ?? throw new AppException(CustomCode.SpaceInvitationNotFound);
@@ -64,6 +69,27 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             }
 
             await _unitOfWork.CommitAsync();
+
+            // Send Notification to Space Owner
+            var space = await spaceRepo.GetByIdAsync(invitation.SpaceId);
+            if (space != null)
+            {
+                var invitedUser = await userRepo.GetByIdAsync(invitation.InvitedUserId);
+                var invitedUserEmail = invitedUser?.Email ?? "A user";
+                var statusText = invitation.Status == InvitationStatus.Accepted ? "accepted" : "rejected";
+                var notificationType = invitation.Status == InvitationStatus.Accepted ? "SpaceInvitationAccepted" : "SpaceInvitationRejected";
+
+                await _hubNotificationService.SendNotificationToUserAsync(
+                    space.CreatedBy,
+                    notificationType,
+                    new
+                    {
+                        SpaceId = space.Id,
+                        SpaceName = space.Name,
+                        UserEmail = invitedUserEmail,
+                        Message = $"{invitedUserEmail} has {statusText} your invitation to join space {space.Name}"
+                    });
+            }
         }
     }
     public class UpdateStatusSpaceInvitationCommandValidator : AbstractValidator<UpdateStatusSpaceInvitationCommand>

@@ -69,15 +69,19 @@ namespace Trava.Application.Features.TaskItems.Commands
 
                     if (ownerId != request.CompletedBy)
                     {
-                         await _hubNotificationService.SendNotificationToUserAsync(
-                            ownerId,
-                            "TaskCompleted",
-                            new 
-                            { 
-                                TaskId = taskItem.Id, 
-                                Title = taskItem.Title,
-                                Message = $"Task {taskItem.Title} has been completed by {request.CompletedBy}"
-                            });
+                        var userRepo = _unitOfWork.GetRepository<User, Guid>();
+                        var user = await userRepo.GetByIdAsync(request.CompletedBy);
+                        var completedByEmail = user?.Email ?? "a user";
+
+                        await _hubNotificationService.SendNotificationToUserAsync(
+                           ownerId,
+                           "TaskCompleted",
+                           new 
+                           { 
+                               TaskId = taskItem.Id, 
+                               Title = taskItem.Title,
+                               Message = $"Task {taskItem.Title} has been completed by {completedByEmail}"
+                           });
                     }
                 }
             }
