@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Trava.Application.Common.Specifications;
 using Trava.Domain.Entities;
+using Trava.Domain.Enums;
 
 namespace Trava.Application.Features.Spaces.Specifications
 {
     public class SpaceSpecParam : BaseSpecParam
     {
         public Guid? UserId { get; set; }
+        public SpaceType? SpaceType { get; set; }
     }
 
     public class SpaceSpecification : ISpecification<Space>
@@ -36,7 +38,8 @@ namespace Trava.Application.Features.Spaces.Specifications
         {
             return s => (string.IsNullOrWhiteSpace(param.SearchTerm) ||
                         EF.Functions.ILike(s.Name, $"%{param.SearchTerm}%")) &&
-                        (!param.UserId.HasValue || (s.CreatedBy == param.UserId.Value || s.Members.Any(sm => sm.UserId == param.UserId.Value)));
+                        (!param.UserId.HasValue || (s.CreatedBy == param.UserId.Value || s.Members.Any(sm => sm.UserId == param.UserId.Value))) &&
+                        (!param.SpaceType.HasValue || s.SpaceType == param.SpaceType.Value);
 
         }
         private static Func<IQueryable<Space>, IOrderedQueryable<Space>>? BuildOrderBy(SpaceSpecParam param)

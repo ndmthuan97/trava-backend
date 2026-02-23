@@ -70,25 +70,52 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
 
             await _unitOfWork.CommitAsync();
 
-            // Send Notification to Space Owner
+            // Send Notification
             var space = await spaceRepo.GetByIdAsync(invitation.SpaceId);
             if (space != null)
             {
                 var invitedUser = await userRepo.GetByIdAsync(invitation.InvitedUserId);
-                var invitedUserEmail = invitedUser?.Email ?? "A user";
-                var statusText = invitation.Status == InvitationStatus.Accepted ? "accepted" : "rejected";
-                var notificationType = invitation.Status == InvitationStatus.Accepted ? "SpaceInvitationAccepted" : "SpaceInvitationRejected";
+                var invitedUserName = invitedUser?.FullName ?? invitedUser?.Email ?? "Người dùng";
+                
+                if (invitation.Status == InvitationStatus.Accepted)
+                {
+                    // Notify Owner
+                    await _hubNotificationService.SendNotificationToUserAsync(
+                        space.CreatedBy,
+                        "SpaceInvitationAccepted",
+                        new
+                        {
+                            SpaceId = space.Id,
+                            SpaceName = space.Name,
+                            UserName = invitedUserName,
+                            Message = $"{invitedUserName} đã chấp nhận lời mời tham gia không gian \"{space.Name}\"."
+                        });
 
-                await _hubNotificationService.SendNotificationToUserAsync(
-                    space.CreatedBy,
-                    notificationType,
-                    new
-                    {
-                        SpaceId = space.Id,
-                        SpaceName = space.Name,
-                        UserEmail = invitedUserEmail,
-                        Message = $"{invitedUserEmail} has {statusText} your invitation to join space {space.Name}"
-                    });
+                    // Welcome Notification to User who joined
+                    await _hubNotificationService.SendNotificationToUserAsync(
+                        invitation.InvitedUserId,
+                        "SpaceWelcome",
+                        new
+                        {
+                            SpaceId = space.Id,
+                            SpaceName = space.Name,
+                            Message = $"Chào mừng bạn đến với {space.Name}! Giờ đây bạn có thể bắt đầu làm việc, kết nối với các thành viên và cộng tác hiệu quả hơn."
+                        });
+                }
+                else
+                {
+                    // Notify Owner of rejection
+                    await _hubNotificationService.SendNotificationToUserAsync(
+                        space.CreatedBy,
+                        "SpaceInvitationRejected",
+                        new
+                        {
+                            SpaceId = space.Id,
+                            SpaceName = space.Name,
+                            UserName = invitedUserName,
+                            Message = $"{invitedUserName} đã từ chối lời mời tham gia không gian \"{space.Name}\"."
+                        });
+                }
             }
         }
     }

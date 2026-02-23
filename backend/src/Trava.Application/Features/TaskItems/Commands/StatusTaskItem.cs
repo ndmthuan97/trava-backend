@@ -71,7 +71,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                     {
                         var userRepo = _unitOfWork.GetRepository<User, Guid>();
                         var user = await userRepo.GetByIdAsync(request.CompletedBy);
-                        var completedByEmail = user?.Email ?? "a user";
+                        var completedByUserName = user?.FullName ?? user?.Email ?? "Thành viên";
 
                         await _hubNotificationService.SendNotificationToUserAsync(
                            ownerId,
@@ -80,7 +80,8 @@ namespace Trava.Application.Features.TaskItems.Commands
                            { 
                                TaskId = taskItem.Id, 
                                Title = taskItem.Title,
-                               Message = $"Task {taskItem.Title} has been completed by {completedByEmail}"
+                               UserName = completedByUserName,
+                               Message = $"Nhiệm vụ \"{taskItem.Title}\" đã được hoàn thành bởi {completedByUserName}."
                            });
                     }
                 }

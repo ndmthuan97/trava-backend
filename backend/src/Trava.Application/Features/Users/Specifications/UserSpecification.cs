@@ -1,15 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
-using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
 using Trava.Application.Common.Specifications;
-using Trava.Application.Features.Spaces.Specifications;
 using Trava.Domain.Entities;
+using Trava.Domain.Enums;
 
 namespace Trava.Application.Features.Users.Specifications;
 
 public class UserSpecParam : BaseSpecParam
 {
-
+    public Role? Role { get; set; }
+    public UserStatus? Status { get; set; }
 }
 
 public class UserSpecification : ISpecification<User>
@@ -33,9 +36,11 @@ public class UserSpecification : ISpecification<User>
 
     private static Expression<Func<User, bool>> BuildCriteria(UserSpecParam param)
     {
-        return u => string.IsNullOrWhiteSpace(param.SearchTerm) ||
+        return u => (string.IsNullOrWhiteSpace(param.SearchTerm) ||
                     EF.Functions.ILike(u.FullName, $"%{param.SearchTerm}%") ||
-                    EF.Functions.ILike(u.Email, $"%{param.SearchTerm}%");
+                    EF.Functions.ILike(u.Email, $"%{param.SearchTerm}%")) &&
+                    (!param.Role.HasValue || u.Role == param.Role.Value) &&
+                    (!param.Status.HasValue || u.Status == param.Status.Value);
     }
 
     private static Func<IQueryable<User>, IOrderedQueryable<User>>? BuildOrderBy(UserSpecParam param)

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Trava.Application.Common.Specifications;
 using Trava.Domain.Entities;
+using Trava.Domain.Enums;
 
 namespace Trava.Application.Features.TaskItems.Specifications
 {
@@ -12,6 +14,8 @@ namespace Trava.Application.Features.TaskItems.Specifications
     {
         public Guid SpaceId { get; set; }
         public Guid? AssignedUserId { get; set; }
+        public List<TaskItemStatus>? Statuses { get; set; }
+        public List<TaskItemPriority>? Priorities { get; set; }
     }
 
     public class TaskItemSpecification : ISpecification<TaskItem>
@@ -26,8 +30,10 @@ namespace Trava.Application.Features.TaskItems.Specifications
         public TaskItemSpecification(TaskItemSpecParam param)
         {
             Criteria = x => x.SpaceId == param.SpaceId &&
-                            (string.IsNullOrWhiteSpace(param.SearchTerm) || x.Title.Contains(param.SearchTerm)) &&
-                            (!param.AssignedUserId.HasValue || x.AssignedUserId == param.AssignedUserId);
+                            (string.IsNullOrWhiteSpace(param.SearchTerm) || EF.Functions.ILike(x.Title, $"%{param.SearchTerm}%")) &&
+                            (!param.AssignedUserId.HasValue || x.AssignedUserId == param.AssignedUserId) &&
+                            (param.Statuses == null || !param.Statuses.Any() || param.Statuses.Contains(x.Status)) &&
+                            (param.Priorities == null || !param.Priorities.Any() || param.Priorities.Contains(x.Priority));
 
             OrderBy = BuildOrderBy(param);
             Skip = (param.PageIndex - 1) * param.PageSize;

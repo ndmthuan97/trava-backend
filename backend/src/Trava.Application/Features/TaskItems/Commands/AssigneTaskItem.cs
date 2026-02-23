@@ -74,7 +74,8 @@ namespace Trava.Application.Features.TaskItems.Commands
                 {
                     TaskId = taskItem.Id,
                     Title = taskItem.Title,
-                    Message = $"You have been assigned a new task: {taskItem.Title}"
+                    SpaceName = space.Name,
+                    Message = $"Bạn vừa được giao một nhiệm vụ mới: \"{taskItem.Title}\" trong không gian \"{space.Name}\". Vui lòng kiểm tra và thực hiện."
                 });
         }
     }
