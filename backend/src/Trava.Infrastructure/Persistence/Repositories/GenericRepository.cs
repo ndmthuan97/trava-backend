@@ -92,6 +92,21 @@ namespace Trava.Infrastructure.Persistence.Repositories
             return await query.FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
+        public async Task<List<TEntity>> GetListAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+            CancellationToken cancellationToken = default)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return await query.Where(predicate).ToListAsync(cancellationToken);
+        }
+
         public async Task<int> CountAsync(
             Expression<Func<TEntity, bool>> predicate,
             CancellationToken cancellationToken = default)

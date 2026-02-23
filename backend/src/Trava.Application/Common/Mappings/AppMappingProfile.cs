@@ -12,6 +12,8 @@ using Trava.Application.Features.Spaces.Responses;
 using Trava.Application.Features.TaskItems.Commands;
 using Trava.Application.Features.TaskItems.Responses;
 using Trava.Application.Features.Users.Responses;
+using System.Text.Json;
+using Trava.Application.Features.Notifications.Responses;
 using Trava.Domain.Entities;
 
 namespace Trava.Application.Common.Mappings
@@ -32,6 +34,13 @@ namespace Trava.Application.Common.Mappings
 
             CreateMap<CreateSpaceInvitationCommand, SpaceInvitation>();
             CreateMap<SpaceInvitation, SpaceInvitationResponse>();
+
+            CreateMap<UserNotification, NotificationResponse>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.NotificationId))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Notification.Type))
+                .ForMember(dest => dest.Payload, opt => opt.MapFrom(src => JsonSerializer.Deserialize<object>(src.Notification.Payload, (JsonSerializerOptions)null!) ?? new object()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Notification.CreatedAt))
+                .ForMember(dest => dest.IsRead, opt => opt.MapFrom(src => src.IsRead));
 
             CreateMap<User, UserResponse>();
         }

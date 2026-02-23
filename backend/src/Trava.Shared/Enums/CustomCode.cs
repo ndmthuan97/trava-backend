@@ -51,5 +51,8 @@ namespace Trava.Shared.Enums
         //Space Invitation Error
         SpaceInvitationNotFound = 4300,
         InvalidInvitationStatusTransition = 4301,
+
+        //Notification Error
+        NotificationNotFound = 4400,
     }
 }
