@@ -40,12 +40,12 @@ namespace Trava.Application.Features.Notifications.Queries
             var totalCount = await userNotificationRepo.CountAsync(un => un.TargetUserId == request.UserId, cancellationToken);
             
             var userNotifications = await userNotificationRepo.GetListAsync(
-                predicate: un => un.TargetUserId == request.UserId,
-                include: q => q.Include(un => un.Notification)
-                               .OrderByDescending(un => un.Notification.CreatedAt)
-                               .Skip((request.PageIndex - 1) * request.PageSize)
-                               .Take(request.PageSize),
-                cancellationToken: cancellationToken
+                un => un.TargetUserId == request.UserId,
+                q => q.Include(un => un.Notification)
+                    .OrderByDescending(un => un.Notification.CreatedAt)
+                    .Skip((request.PageIndex - 1) * request.PageSize)
+                    .Take(request.PageSize),
+                cancellationToken
             );
 
             var data = _mapper.Map<IReadOnlyCollection<NotificationResponse>>(userNotifications);
