@@ -14,7 +14,7 @@ namespace Trava.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(x => new { x.SpaceId, x.UserId });
 
-            builder.Property(x => x.Role)
+            builder.Property(x => x.SpaceRole)
                 .HasConversion<int>()
                 .IsRequired();
 

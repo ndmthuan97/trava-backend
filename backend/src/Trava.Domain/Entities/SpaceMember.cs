@@ -10,7 +10,7 @@ namespace Trava.Domain.Entities
     {
         public Guid SpaceId { get; set; }
         public Guid UserId { get; set; }
-        public SpaceRole Role { get; set; } = SpaceRole.Member;
+        public SpaceRole SpaceRole { get; set; } = SpaceRole.Member;
         public DateTimeOffset JoinedAt { get; set; } = DateTimeOffset.UtcNow;
 
         // Navigation properties

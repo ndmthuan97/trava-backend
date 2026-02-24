@@ -63,7 +63,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                 {
                     SpaceId = invitation.SpaceId,
                     UserId = invitation.InvitedUserId,
-                    Role = SpaceRole.Member,
+                    SpaceRole = SpaceRole.Member,
                 };
                 await spaceMemberRepo.AddAsync(spaceMember);
             }
@@ -75,7 +75,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             if (space != null)
             {
                 var invitedUser = await userRepo.GetByIdAsync(invitation.InvitedUserId);
-                var invitedUserName = invitedUser?.FullName ?? invitedUser?.Email ?? "Người dùng";
+                var invitedUserName = invitedUser?.FullName ?? invitedUser?.Email ?? "User";
                 
                 if (invitation.Status == InvitationStatus.Accepted)
                 {
@@ -88,9 +88,9 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                             SpaceId = space.Id,
                             SpaceName = space.Name,
                             UserName = invitedUserName,
-                            Message = $"{invitedUserName} đã chấp nhận lời mời tham gia không gian \"{space.Name}\"."
+                            Message = $"{invitedUserName} accepted the invitation to join space \"{space.Name}\"."
                         });
-
+ 
                     // Welcome Notification to User who joined
                     await _hubNotificationService.SendNotificationToUserAsync(
                         invitation.InvitedUserId,
@@ -99,7 +99,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                         {
                             SpaceId = space.Id,
                             SpaceName = space.Name,
-                            Message = $"Chào mừng bạn đến với {space.Name}! Giờ đây bạn có thể bắt đầu làm việc, kết nối với các thành viên và cộng tác hiệu quả hơn."
+                            Message = $"Welcome to {space.Name}! You can now start working, connecting with members and collaborating effectively."
                         });
                 }
                 else
@@ -113,7 +113,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                             SpaceId = space.Id,
                             SpaceName = space.Name,
                             UserName = invitedUserName,
-                            Message = $"{invitedUserName} đã từ chối lời mời tham gia không gian \"{space.Name}\"."
+                            Message = $"{invitedUserName} rejected the invitation to join space \"{space.Name}\"."
                         });
                 }
             }

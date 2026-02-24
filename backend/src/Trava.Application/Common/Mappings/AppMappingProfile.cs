@@ -35,6 +35,10 @@ namespace Trava.Application.Common.Mappings
             CreateMap<CreateSpaceInvitationCommand, SpaceInvitation>();
             CreateMap<SpaceInvitation, SpaceInvitationResponse>();
 
+            CreateMap<TaskComment, TaskCommentResponse>()
+                .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl));
+
             CreateMap<UserNotification, NotificationResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.NotificationId))
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Notification.Type))

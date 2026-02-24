@@ -51,7 +51,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                 var isOwner = await spaceMemberRepo.ExistsAsync(sm =>
                     sm.SpaceId == taskItem.SpaceId &&
                     sm.UserId == request.UserId &&
-                    sm.Role == SpaceRole.Owner);
+                    sm.SpaceRole == SpaceRole.Owner);
 
                 if (!isOwner)
                 {

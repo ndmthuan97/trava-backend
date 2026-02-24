@@ -137,7 +137,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 {
                     SpaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
+                    SpaceRole = table.Column<int>(type: "integer", nullable: false),
                     JoinedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

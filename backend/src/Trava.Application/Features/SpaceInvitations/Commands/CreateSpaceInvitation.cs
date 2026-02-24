@@ -49,7 +49,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             if (space != null)
             {
                 var owner = await userRepo.GetByIdAsync(space.CreatedBy);
-                var inviterName = owner?.FullName ?? owner?.Email ?? "Quản trị viên";
+                var inviterName = owner?.FullName ?? owner?.Email ?? "Administrator";
 
                 await _hubNotificationService.SendNotificationToUserAsync(
                     request.InvitedUserId,
@@ -59,7 +59,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                         SpaceId = space.Id,
                         SpaceName = space.Name,
                         InviterName = inviterName,
-                        Message = $"{inviterName} đã mời bạn tham gia không gian làm việc \"{space.Name}\". Hãy tham gia để bắt đầu cộng tác cùng nhóm!"
+                        Message = $"{inviterName} has invited you to join the workspace \"{space.Name}\". Join now to start collaborating with the team!"
                     });
             }
 

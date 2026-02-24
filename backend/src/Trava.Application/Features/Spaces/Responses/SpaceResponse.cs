@@ -11,5 +11,6 @@ namespace Trava.Application.Features.Spaces.Responses
         public SpaceType SpaceType { get; init; }
         public Guid CreatedBy { get; init; }
         public int CountMember { get; init; }
+        public SpaceRole? Role { get; init; }
     }
 }

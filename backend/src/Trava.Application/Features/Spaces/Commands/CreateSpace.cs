@@ -48,7 +48,7 @@ namespace Trava.Application.Features.Spaces.Commands
                 {
                     SpaceId = space.Id,
                     UserId = request.CreatedBy,
-                    Role = SpaceRole.Owner,
+                    SpaceRole = SpaceRole.Owner,
                 };
                 await _spaceMemberRepository.AddAsync(spaceMember);
             }

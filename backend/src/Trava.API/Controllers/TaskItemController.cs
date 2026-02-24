@@ -96,33 +96,7 @@ namespace Trava.API.Controllers
             if (!Guid.TryParse(userId, out var userIdGuid))
                 return Respond(CustomCode.UserIdNotFound);
 
-            command = command with { Id = id };
-            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
-        }
-
-        [HttpPut("status/{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> StatusTaskItem([FromRoute] Guid id, [FromBody] StatusTaskItemCommand command)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userId, out var userIdGuid))
-                return Respond(CustomCode.UserIdNotFound);
-
-            command = command with { Id = id, CompletedBy = userIdGuid };
-            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
-        }
-
-        [HttpPatch("assigne/{id:guid}")]
-        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> AssigneTaskItem([FromRoute] Guid id, [FromBody] AssigneTaskItemCommand command)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userId, out var userIdGuid))
-                return Respond(CustomCode.UserIdNotFound);
-
-            command = command with { Id = id, CreatedBy = userIdGuid };
+            command = command with { Id = id, UpdatedBy = userIdGuid };
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
@@ -137,6 +111,30 @@ namespace Trava.API.Controllers
 
             var command = new DeleteTaskItemCommand(id, userIdGuid);
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Success);
+        }
+
+        [HttpGet("{id:guid}/comments")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        public async Task<IActionResult> GetTaskComments([FromRoute] Guid id)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetTaskCommentsQuery(id)));
+            });
+        }
+
+        [HttpPost("{id:guid}/comments")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        public async Task<IActionResult> CreateTaskComment([FromRoute] Guid id, [FromBody] CreateTaskCommentCommand command)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Created, await _mediator.Send(command with { TaskItemId = id, UserId = userIdGuid }));
+            });
         }
     }
 }

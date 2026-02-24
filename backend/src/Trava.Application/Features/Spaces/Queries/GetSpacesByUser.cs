@@ -5,6 +5,7 @@ using Trava.Application.Features.Spaces.Responses;
 using Trava.Application.Features.Spaces.Specifications;
 using Trava.Application.Interfaces;
 using Trava.Domain.Entities;
+using Trava.Domain.Enums;
 
 namespace Trava.Application.Features.Spaces.Queries;
 
@@ -28,6 +29,19 @@ public class GetSpacesByUserQueryHandler : IRequestHandler<GetSpacesByUserQuery,
 
         var result = await spaceRepo.GetWithSpecAsync(spec);
 
-        return _mapper.Map<Pagination<SpaceResponse>>(result);
+        var items = result.Data.Select(s => {
+            var res = _mapper.Map<SpaceResponse>(s);
+            
+            SpaceRole? role = s.Members.FirstOrDefault(m => m.UserId == request.Param.UserId)?.SpaceRole;
+            
+            if (s.SpaceType == SpaceType.Personal && s.CreatedBy == request.Param.UserId)
+            {
+                role = SpaceRole.Owner;
+            }
+            
+            return res with { Role = role };
+        }).ToList();
+
+        return new Pagination<SpaceResponse>(result.PageIndex, result.PageSize, (int)result.Count, items);
     }
 }

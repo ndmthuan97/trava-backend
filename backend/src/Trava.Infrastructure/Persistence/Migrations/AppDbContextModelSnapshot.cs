@@ -135,7 +135,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("JoinedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("SpaceRole")
                         .HasColumnType("integer");
 
                     b.HasKey("SpaceId", "UserId");
