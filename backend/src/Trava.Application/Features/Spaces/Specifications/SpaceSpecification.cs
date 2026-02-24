@@ -14,6 +14,7 @@ namespace Trava.Application.Features.Spaces.Specifications
     {
         public Guid? UserId { get; set; }
         public SpaceType? SpaceType { get; set; }
+        public SpaceRole? SpaceRole { get; set; }
     }
 
     public class SpaceSpecification : ISpecification<Space>
@@ -38,7 +39,14 @@ namespace Trava.Application.Features.Spaces.Specifications
         {
             return s => (string.IsNullOrWhiteSpace(param.SearchTerm) ||
                         EF.Functions.ILike(s.Name, $"%{param.SearchTerm}%")) &&
-                        (!param.UserId.HasValue || (s.CreatedBy == param.UserId.Value || s.Members.Any(sm => sm.UserId == param.UserId.Value))) &&
+                        (!param.UserId.HasValue || (
+                            // If role is specified, user must have that role as a member
+                            (param.SpaceRole.HasValue && s.Members.Any(sm => sm.UserId == param.UserId.Value && sm.SpaceRole == param.SpaceRole.Value)) ||
+                            // Special case: Owner role also includes the creator for personal spaces
+                            (param.SpaceRole.HasValue && param.SpaceRole.Value == SpaceRole.Owner && s.SpaceType == SpaceType.Personal && s.CreatedBy == param.UserId.Value) ||
+                            // If no role specified, any membership or personal ownership counts
+                            (!param.SpaceRole.HasValue && (s.CreatedBy == param.UserId.Value || s.Members.Any(sm => sm.UserId == param.UserId.Value)))
+                        )) &&
                         (!param.SpaceType.HasValue || s.SpaceType == param.SpaceType.Value);
 
         }

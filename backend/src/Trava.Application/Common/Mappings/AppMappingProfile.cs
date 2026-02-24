@@ -26,8 +26,7 @@ namespace Trava.Application.Common.Mappings
             .ConvertUsing(typeof(PaginationMapping<,>));
 
             CreateMap<CreateSpaceCommand, Space>();
-            CreateMap<Space, SpaceResponse>()
-                .ForMember(dest => dest.CountMember, opt => opt.MapFrom(src => src.Members.Count));
+            CreateMap<Space, SpaceResponse>();
 
             CreateMap<CreateTaskItemCommand, TaskItem>();
             CreateMap<TaskItem, TaskItemResponse>();
