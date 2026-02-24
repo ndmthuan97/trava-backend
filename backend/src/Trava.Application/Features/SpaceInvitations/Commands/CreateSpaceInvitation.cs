@@ -50,6 +50,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             {
                 var owner = await userRepo.GetByIdAsync(space.CreatedBy);
                 var inviterName = owner?.FullName ?? owner?.Email ?? "Administrator";
+                var inviterAvatar = owner?.AvatarUrl;
 
                 await _hubNotificationService.SendNotificationToUserAsync(
                     request.InvitedUserId,
@@ -59,6 +60,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                         SpaceId = space.Id,
                         SpaceName = space.Name,
                         InviterName = inviterName,
+                        InviterAvatarUrl = inviterAvatar,
                         Message = $"{inviterName} has invited you to join the workspace \"{space.Name}\". Join now to start collaborating with the team!"
                     });
             }

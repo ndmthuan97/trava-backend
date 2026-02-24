@@ -74,6 +74,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             // 1. Notify new assignee if changed
             if (taskItem.AssignedUserId.HasValue && taskItem.AssignedUserId != oldAssignedUserId)
             {
+                var updater = await userRepo.GetByIdAsync(request.UpdatedBy);
                 await _hubNotificationService.SendNotificationToUserAsync(
                     taskItem.AssignedUserId.Value,
                     "TaskAssigned",
@@ -82,6 +83,8 @@ namespace Trava.Application.Features.TaskItems.Commands
                         TaskId = taskItem.Id,
                         Title = taskItem.Title,
                         SpaceName = space.Name,
+                        UserName = updater?.FullName ?? updater?.Email ?? "Administrator",
+                        UserAvatarUrl = updater?.AvatarUrl,
                         Message = $"You have been assigned a new task: \"{taskItem.Title}\" in space \"{space.Name}\"."
                     });
             }
@@ -114,6 +117,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                             TaskId = taskItem.Id,
                             Title = taskItem.Title,
                             UserName = userName,
+                            UserAvatarUrl = user?.AvatarUrl,
                             Message = $"The task \"{taskItem.Title}\" was completed by {userName}."
                         });
                 }

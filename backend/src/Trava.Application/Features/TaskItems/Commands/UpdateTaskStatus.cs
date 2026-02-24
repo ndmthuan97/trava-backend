@@ -104,6 +104,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                             TaskId = taskItem.Id,
                             Title = taskItem.Title,
                             UserName = userName,
+                            UserAvatarUrl = user?.AvatarUrl,
                             Message = $"The task \"{taskItem.Title}\" was completed by {userName}."
                         });
                 }

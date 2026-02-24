@@ -68,6 +68,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                 CommentId = comment.Id,
                 CommentContent = comment.Content,
                 UserName = commenterName,
+                UserAvatarUrl = user.AvatarUrl,
                 Message = $"{commenterName} commented on task \"{taskItem.Title}\"."
             };
 

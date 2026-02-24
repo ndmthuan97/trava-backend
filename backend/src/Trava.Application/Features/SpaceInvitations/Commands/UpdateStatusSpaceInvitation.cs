@@ -76,6 +76,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             {
                 var invitedUser = await userRepo.GetByIdAsync(invitation.InvitedUserId);
                 var invitedUserName = invitedUser?.FullName ?? invitedUser?.Email ?? "User";
+                var invitedUserAvatar = invitedUser?.AvatarUrl;
                 
                 if (invitation.Status == InvitationStatus.Accepted)
                 {
@@ -88,6 +89,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                             SpaceId = space.Id,
                             SpaceName = space.Name,
                             UserName = invitedUserName,
+                            UserAvatarUrl = invitedUserAvatar,
                             Message = $"{invitedUserName} accepted the invitation to join space \"{space.Name}\"."
                         });
  
@@ -113,6 +115,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                             SpaceId = space.Id,
                             SpaceName = space.Name,
                             UserName = invitedUserName,
+                            UserAvatarUrl = invitedUserAvatar,
                             Message = $"{invitedUserName} rejected the invitation to join space \"{space.Name}\"."
                         });
                 }
