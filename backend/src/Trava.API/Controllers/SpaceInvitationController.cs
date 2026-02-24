@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trava.API.Models;
 using Trava.Application.Features.SpaceInvitations.Commands;
+using Trava.Application.Features.SpaceInvitations.Queries;
+using Trava.Application.Features.SpaceInvitations.Responses;
+using Trava.Application.Common.Models;
+using Trava.Application.Features.SpaceInvitations.Specifications;
 using Trava.Domain.Enums;
 using Trava.Shared.Enums;
 
@@ -21,6 +25,19 @@ namespace Trava.API.Controllers
         public SpaceInvitationController(IMediator mediator, ILogger<SpaceInvitationController> logger) : base(logger)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet("my-invitations")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<Pagination<SpaceInvitationResponse>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyInvitations([FromQuery] InvitationSpecParam param)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            param.InvitedUserId = userIdGuid;
+            return await HandleRequestAsync(async () => (CustomCode.Success, await _mediator.Send(new GetMyInvitationsQuery(param))));
         }
 
         [HttpPost]
