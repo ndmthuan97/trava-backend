@@ -23,7 +23,7 @@ namespace Trava.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("admin")]
+        [HttpGet]
         [Authorize(Roles = nameof(Role.Admin))]
         [ProducesResponseType(typeof(ApiResponse<StatisticsResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAdminDashboard()
