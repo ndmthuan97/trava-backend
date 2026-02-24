@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -30,7 +31,33 @@ namespace Trava.Application.Features.SpaceInvitations.Queries
             var spec = new InvitationSpecification(request.Param);
             var result = await _unitOfWork.GetRepository<SpaceInvitation, Guid>().GetWithSpecAsync(spec);
 
-            var items = _mapper.Map<List<SpaceInvitationResponse>>(result.Data);
+            var inviterIds = result.Data
+                .Where(i => i.Space != null)
+                .Select(i => i.Space.CreatedBy)
+                .Distinct()
+                .ToList();
+
+            var userRepo = _unitOfWork.GetRepository<User, Guid>();
+            var inviters = await userRepo.GetListAsync(u => inviterIds.Contains(u.Id), cancellationToken: cancellationToken);
+            var inviterMap = inviters.ToDictionary(u => u.Id);
+
+            var items = result.Data.Select(invitation =>
+            {
+                var response = _mapper.Map<SpaceInvitationResponse>(invitation);
+
+                if (invitation.Space != null && inviterMap.TryGetValue(invitation.Space.CreatedBy, out var inviter))
+                {
+                    response = response with
+                    {
+                        InviterName = inviter.FullName,
+                        InviterEmail = inviter.Email,
+                        InviterAvatarUrl = inviter.AvatarUrl
+                    };
+                }
+
+                return response;
+            }).ToList();
+
             return new Pagination<SpaceInvitationResponse>(result.PageIndex, result.PageSize, (int)result.Count, items);
         }
     }
