@@ -111,8 +111,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     SpaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     InvitedUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     SpaceRole = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    ExpiredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

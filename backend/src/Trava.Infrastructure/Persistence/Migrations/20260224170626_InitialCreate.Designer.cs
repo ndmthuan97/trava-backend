@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260224045112_InitialCreate")]
+    [Migration("20260224170626_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -102,9 +102,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ExpiredAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("InvitedUserId")
                         .HasColumnType("uuid");

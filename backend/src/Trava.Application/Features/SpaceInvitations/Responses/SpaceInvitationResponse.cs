@@ -14,6 +14,6 @@ namespace Trava.Application.Features.SpaceInvitations.Responses
         public string? InviterName { get; init; }
         public string? InviterAvatarUrl { get; init; }
         public InvitationStatus Status { get; init; }
-        public DateTime? ExpiredAt { get; init; }
+
     }
 }

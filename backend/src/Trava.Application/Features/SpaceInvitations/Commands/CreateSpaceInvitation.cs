@@ -17,8 +17,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
 {
     public record CreateSpaceInvitationCommand(
         Guid SpaceId,
-        Guid InvitedUserId,
-        DateTime? ExpiredAt
+        Guid InvitedUserId
     ) : IRequest<SpaceInvitationResponse>;
 
     public class CreateSpaceInvitationCommandHandler : IRequestHandler<CreateSpaceInvitationCommand, SpaceInvitationResponse>
@@ -89,13 +88,6 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                 .MustAsync(async (id, ct) =>
                     await userRepo.ExistsAsync(u => u.Id == id))
                 .WithMessage("User does not exist.");
-
-            When(x => x.ExpiredAt.HasValue, () =>
-            {
-                RuleFor(x => x.ExpiredAt!.Value)
-                    .Must(x => x > DateTime.UtcNow)
-                    .WithMessage("ExpiredAt must be in the future.");
-            });
         }
     }
 }

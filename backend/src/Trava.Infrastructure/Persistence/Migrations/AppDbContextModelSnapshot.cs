@@ -100,9 +100,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ExpiredAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("InvitedUserId")
                         .HasColumnType("uuid");
 

@@ -22,9 +22,6 @@ namespace Trava.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Status)
                 .IsRequired();
 
-            builder.Property(x => x.ExpiredAt)
-                .IsRequired(false);
-
             builder.HasOne(x => x.Space)
                 .WithMany()
                 .HasForeignKey(x => x.SpaceId)

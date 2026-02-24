@@ -13,7 +13,7 @@ namespace Trava.Domain.Entities
         public Guid InvitedUserId { get; set; }
         public SpaceRole SpaceRole { get; set; } = SpaceRole.Member;
         public InvitationStatus Status { get; set; } = InvitationStatus.Pending;
-        public DateTime? ExpiredAt { get; set; }
+
 
         // Navigation properties
         public Space Space { get; set; } = default!;

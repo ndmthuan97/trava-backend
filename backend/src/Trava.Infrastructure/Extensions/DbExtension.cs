@@ -65,7 +65,7 @@ namespace Trava.Infrastructure.Extensions
             var user2 = new User
             {
                 Id = new Guid("4a4a4a4a-4a4a-4a4a-4a4a-4a4a4a4a4a4a"),
-                Email = "member@fpt.edu.vn",
+                Email = "user1@fpt.edu.vn",
                 FullName = "Jane Smith",
                 Password = BCrypt.Net.BCrypt.HashPassword("User@123"),
                 Role = Role.User,
@@ -206,8 +206,7 @@ namespace Trava.Infrastructure.Extensions
                 Id = Guid.NewGuid(),
                 SpaceId = teamSpace.Id,
                 InvitedUserId = user2.Id,
-                Status = InvitationStatus.Pending,
-                ExpiredAt = DateTime.UtcNow.AddDays(7)
+                Status = InvitationStatus.Pending
             };
 
             await context.SpaceInvitations.AddAsync(invitation);
