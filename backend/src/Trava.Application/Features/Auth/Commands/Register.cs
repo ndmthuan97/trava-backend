@@ -15,11 +15,13 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CustomCod
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<RegisterCommandHandler> _logger;
+    private readonly IHubNotificationService _hubNotificationService;
 
-    public RegisterCommandHandler(IUnitOfWork unitOfWork, ILogger<RegisterCommandHandler> logger)
+    public RegisterCommandHandler(IUnitOfWork unitOfWork, ILogger<RegisterCommandHandler> logger, IHubNotificationService hubNotificationService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _hubNotificationService = hubNotificationService;
     }
 
     public async Task<CustomCode> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -44,6 +46,17 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CustomCod
         await _unitOfWork.CommitAsync();
 
         _logger.LogInformation("New user registered with email: {Email}.", request.Email);
+
+        // Send Welcome Notification
+        await _hubNotificationService.SendNotificationToUserAsync(
+            newUser.Id,
+            "Welcome",
+            new
+            {
+                Title = "Welcome to Trava!",
+                Message = $"Hello {newUser.FullName}, welcome to Trava! We're glad to have you here. Let's start managing your tasks efficiently."
+            });
+
         return CustomCode.Success;
     }
 }
