@@ -38,8 +38,15 @@ namespace Trava.Application.Features.SpaceInvitations.Queries
                 .ToList();
 
             var userRepo = _unitOfWork.GetRepository<User, Guid>();
-            var inviters = await userRepo.GetListAsync(u => inviterIds.Contains(u.Id), cancellationToken: cancellationToken);
-            var inviterMap = inviters.ToDictionary(u => u.Id);
+            var inviterMap = new Dictionary<Guid, User>();
+            foreach (var id in inviterIds)
+            {
+                if (!inviterMap.ContainsKey(id))
+                {
+                    var user = await userRepo.GetByIdAsync(id);
+                    if (user != null) inviterMap[id] = user;
+                }
+            }
 
             var items = result.Data.Select(invitation =>
             {
@@ -49,8 +56,7 @@ namespace Trava.Application.Features.SpaceInvitations.Queries
                 {
                     response = response with
                     {
-                        InviterName = inviter.FullName,
-                        InviterEmail = inviter.Email,
+                        InviterName = inviter.FullName ?? inviter.Email,
                         InviterAvatarUrl = inviter.AvatarUrl
                     };
                 }
