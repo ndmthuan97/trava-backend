@@ -67,8 +67,8 @@ namespace Trava.Application.Features.TaskItems.Commands
                 TaskTitle = taskItem.Title,
                 CommentId = comment.Id,
                 CommentContent = comment.Content,
-                UserName = commenterName,
-                UserAvatarUrl = user.AvatarUrl,
+                SenderName = commenterName,
+                SenderAvatarUrl = user.AvatarUrl,
                 Message = $"{commenterName} commented on task \"{taskItem.Title}\"."
             };
 
@@ -78,7 +78,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             {
                 await _hubNotificationService.SendNotificationToUserAsync(
                     taskItem.AssignedUserId.Value,
-                    "NewTaskComment",
+                    "New Comment",
                     notificationPayload);
             }
 
@@ -102,7 +102,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                 {
                     await _hubNotificationService.SendNotificationToUserAsync(
                         ownerId,
-                        "NewTaskComment",
+                        "New Comment",
                         notificationPayload);
                 }
             }

@@ -98,13 +98,13 @@ namespace Trava.Application.Features.TaskItems.Commands
 
                     await _hubNotificationService.SendNotificationToUserAsync(
                         ownerId,
-                        "TaskCompleted",
+                        "Task Completed",
                         new
                         {
                             TaskId = taskItem.Id,
                             Title = taskItem.Title,
-                            UserName = userName,
-                            UserAvatarUrl = user?.AvatarUrl,
+                            SenderName = userName,
+                            SenderAvatarUrl = user?.AvatarUrl,
                             Message = $"The task \"{taskItem.Title}\" was completed by {userName}."
                         });
                 }

@@ -54,13 +54,13 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
 
                 await _hubNotificationService.SendNotificationToUserAsync(
                     request.InvitedUserId,
-                    "SpaceInvited",
+                    "Space Invitation",
                     new
                     {
                         SpaceId = space.Id,
                         SpaceName = space.Name,
-                        InviterName = inviterName,
-                        InviterAvatarUrl = inviterAvatar,
+                        SenderName = inviterName,
+                        SenderAvatarUrl = inviterAvatar,
                         Message = $"{inviterName} has invited you to join the workspace \"{space.Name}\". Join now to start collaborating with the team!"
                     });
             }

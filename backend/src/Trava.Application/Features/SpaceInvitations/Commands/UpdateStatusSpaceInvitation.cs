@@ -83,20 +83,20 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                     // Notify Owner
                     await _hubNotificationService.SendNotificationToUserAsync(
                         space.CreatedBy,
-                        "SpaceInvitationAccepted",
+                        "Invitation Accepted",
                         new
                         {
                             SpaceId = space.Id,
                             SpaceName = space.Name,
-                            UserName = invitedUserName,
-                            UserAvatarUrl = invitedUserAvatar,
+                            SenderName = invitedUserName,
+                            SenderAvatarUrl = invitedUserAvatar,
                             Message = $"{invitedUserName} accepted the invitation to join space \"{space.Name}\"."
                         });
  
                     // Welcome Notification to User who joined
                     await _hubNotificationService.SendNotificationToUserAsync(
                         invitation.InvitedUserId,
-                        "SpaceWelcome",
+                        "Space Welcome",
                         new
                         {
                             SpaceId = space.Id,
@@ -109,13 +109,13 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                     // Notify Owner of rejection
                     await _hubNotificationService.SendNotificationToUserAsync(
                         space.CreatedBy,
-                        "SpaceInvitationRejected",
+                        "Invitation Rejected",
                         new
                         {
                             SpaceId = space.Id,
                             SpaceName = space.Name,
-                            UserName = invitedUserName,
-                            UserAvatarUrl = invitedUserAvatar,
+                            SenderName = invitedUserName,
+                            SenderAvatarUrl = invitedUserAvatar,
                             Message = $"{invitedUserName} rejected the invitation to join space \"{space.Name}\"."
                         });
                 }
