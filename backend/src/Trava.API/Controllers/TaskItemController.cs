@@ -100,6 +100,19 @@ namespace Trava.API.Controllers
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
+        [HttpPatch("{id:guid}/status")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateTaskStatus([FromRoute] Guid id, [FromBody] UpdateTaskStatusCommand command)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            command = command with { Id = id, UserId = userIdGuid };
+            return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
+        }
+
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]

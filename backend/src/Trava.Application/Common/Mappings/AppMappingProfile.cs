@@ -46,6 +46,7 @@ namespace Trava.Application.Common.Mappings
                 .ForMember(dest => dest.IsRead, opt => opt.MapFrom(src => src.IsRead));
 
             CreateMap<User, UserResponse>();
+            CreateMap<User, UserSearchResponse>();
         }
     }
 }

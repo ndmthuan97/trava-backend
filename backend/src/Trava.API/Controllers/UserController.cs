@@ -26,12 +26,23 @@ namespace Trava.API.Controllers
 
         [HttpGet()]
         [Authorize(Roles = nameof(Role.Admin))]
-        [ProducesResponseType(typeof(Pagination<UserResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<Pagination<UserResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsers([FromQuery] UserSpecParam param)
         {
             return await HandleRequestAsync( async () =>
             {
                 return (CustomCode.Success, await _mediator.Send(new GetUsersQuery(param)));
+            });
+        }
+
+        [HttpGet("search")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<List<UserSearchResponse>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SearchUsers([FromQuery] string? searchTerm)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new SearchUsersQuery(searchTerm)));
             });
         }
 
