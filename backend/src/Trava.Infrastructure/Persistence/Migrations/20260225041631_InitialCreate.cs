@@ -194,6 +194,12 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_TaskItems_Users_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -273,6 +279,11 @@ namespace Trava.Infrastructure.Persistence.Migrations
                 name: "IX_TaskItems_AssignedUserId",
                 table: "TaskItems",
                 column: "AssignedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskItems_CreatedBy",
+                table: "TaskItems",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskItems_SpaceId",

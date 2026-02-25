@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260224170626_InitialCreate")]
+    [Migration("20260225041631_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -256,6 +256,8 @@ namespace Trava.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AssignedUserId");
 
+                    b.HasIndex("CreatedBy");
+
                     b.HasIndex("SpaceId");
 
                     b.HasIndex("SpaceId", "Title")
@@ -423,6 +425,12 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasForeignKey("AssignedUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Trava.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Trava.Domain.Entities.Space", "Space")
                         .WithMany("TaskItems")
                         .HasForeignKey("SpaceId")
@@ -430,6 +438,8 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("AssignedUser");
+
+                    b.Navigation("Creator");
 
                     b.Navigation("Space");
                 });
