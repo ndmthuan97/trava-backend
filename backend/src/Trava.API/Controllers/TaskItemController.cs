@@ -100,10 +100,10 @@ namespace Trava.API.Controllers
             return await HandleRequestAsync(() => _mediator.Send(command), CustomCode.Updated);
         }
 
-        [HttpPatch("{id:guid}/status")]
+        [HttpPatch("{id:guid}")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateTaskStatus([FromRoute] Guid id, [FromBody] UpdateTaskStatusCommand command)
+        public async Task<IActionResult> QuickUpdateTaskItem([FromRoute] Guid id, [FromBody] QuickUpdateTaskItemCommand command)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(userId, out var userIdGuid))

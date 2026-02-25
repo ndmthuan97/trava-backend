@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260225041631_InitialCreate")]
+    [Migration("20260225064054_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

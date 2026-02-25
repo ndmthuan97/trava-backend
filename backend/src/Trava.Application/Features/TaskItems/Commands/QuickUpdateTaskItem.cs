@@ -13,24 +13,26 @@ using FluentValidation;
 
 namespace Trava.Application.Features.TaskItems.Commands
 {
-    public record UpdateTaskStatusCommand(
+    public record QuickUpdateTaskItemCommand(
         [property: JsonIgnore] Guid Id,
-        TaskItemStatus Status,
+        TaskItemStatus? Status,
+        DateTimeOffset? StartDate,
+        DateTimeOffset? DueDate,
         [property: JsonIgnore] Guid UserId
     ) : IRequest;
 
-    public class UpdateTaskStatusCommandHandler : IRequestHandler<UpdateTaskStatusCommand>
+    public class QuickUpdateTaskItemCommandHandler : IRequestHandler<QuickUpdateTaskItemCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHubNotificationService _hubNotificationService;
 
-        public UpdateTaskStatusCommandHandler(IUnitOfWork unitOfWork, IHubNotificationService hubNotificationService)
+        public QuickUpdateTaskItemCommandHandler(IUnitOfWork unitOfWork, IHubNotificationService hubNotificationService)
         {
             _unitOfWork = unitOfWork;
             _hubNotificationService = hubNotificationService;
         }
 
-        public async Task Handle(UpdateTaskStatusCommand request, CancellationToken cancellationToken)
+        public async Task Handle(QuickUpdateTaskItemCommand request, CancellationToken cancellationToken)
         {
             var taskItemRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
             var spaceRepo = _unitOfWork.GetRepository<Space, Guid>();
@@ -62,22 +64,36 @@ namespace Trava.Application.Features.TaskItems.Commands
             }
 
             var oldStatus = taskItem.Status;
-            taskItem.Status = request.Status;
             
-            if (taskItem.Status == TaskItemStatus.Completed && oldStatus != TaskItemStatus.Completed)
+            if (request.Status.HasValue)
             {
-                taskItem.CompletedAt = DateTimeOffset.UtcNow;
+                taskItem.Status = request.Status.Value;
+                
+                if (taskItem.Status == TaskItemStatus.Completed && oldStatus != TaskItemStatus.Completed)
+                {
+                    taskItem.CompletedAt = DateTimeOffset.UtcNow;
+                }
+                else if (taskItem.Status != TaskItemStatus.Completed)
+                {
+                    taskItem.CompletedAt = null;
+                }
             }
-            else if (taskItem.Status != TaskItemStatus.Completed)
+
+            if (request.StartDate.HasValue)
             {
-                taskItem.CompletedAt = null;
+                taskItem.StartDate = request.StartDate.Value;
+            }
+
+            if (request.DueDate.HasValue)
+            {
+                taskItem.DueDate = request.DueDate.Value;
             }
 
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();
 
             // Notify Space Owner if task is completed by Someone else
-            if (taskItem.Status == TaskItemStatus.Completed && oldStatus != TaskItemStatus.Completed)
+            if (request.Status.HasValue && taskItem.Status == TaskItemStatus.Completed && oldStatus != TaskItemStatus.Completed)
             {
                 Guid ownerId = Guid.Empty;
                 if (space.SpaceType == SpaceType.Personal)
@@ -112,13 +128,20 @@ namespace Trava.Application.Features.TaskItems.Commands
         }
     }
 
-    public class UpdateTaskStatusCommandValidator : AbstractValidator<UpdateTaskStatusCommand>
+    public class QuickUpdateTaskItemCommandValidator : AbstractValidator<QuickUpdateTaskItemCommand>
     {
-        public UpdateTaskStatusCommandValidator()
+        public QuickUpdateTaskItemCommandValidator()
         {
             RuleFor(x => x.Id).NotEmpty();
-            RuleFor(x => x.Status).IsInEnum();
             RuleFor(x => x.UserId).NotEmpty();
+            
+            When(x => x.Status.HasValue, () => {
+                RuleFor(x => x.Status!.Value).IsInEnum();
+            });
+
+            RuleFor(x => x)
+                .Must(x => !x.StartDate.HasValue || !x.DueDate.HasValue || x.StartDate <= x.DueDate)
+                .WithMessage("StartDate must be earlier than DueDate.");
         }
     }
 }

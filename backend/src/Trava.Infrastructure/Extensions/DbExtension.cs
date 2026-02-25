@@ -132,7 +132,8 @@ namespace Trava.Infrastructure.Extensions
                 AssignedUserId = admin.Id,
                 AssignedAt = DateTimeOffset.UtcNow,
                 CompletedAt = DateTimeOffset.UtcNow,
-                CreatedAt = DateTimeOffset.UtcNow.AddDays(-5)
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-5),
+                CreatedBy = admin.Id
             };
 
             var task2 = new TaskItem
@@ -146,7 +147,8 @@ namespace Trava.Infrastructure.Extensions
                 Point = 8,
                 AssignedUserId = user1.Id,
                 AssignedAt = DateTimeOffset.UtcNow,
-                CreatedAt = DateTimeOffset.UtcNow.AddDays(-3)
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-3),
+                CreatedBy = admin.Id
             };
 
             var task3 = new TaskItem
@@ -158,7 +160,8 @@ namespace Trava.Infrastructure.Extensions
                 Status = TaskItemStatus.NotStart,
                 Priority = TaskItemPriority.Medium,
                 Point = 3,
-                CreatedAt = DateTimeOffset.UtcNow.AddDays(-1)
+                CreatedAt = DateTimeOffset.UtcNow.AddDays(-1),
+                CreatedBy = admin.Id
             };
 
             var task4 = new TaskItem
@@ -172,7 +175,8 @@ namespace Trava.Infrastructure.Extensions
                 Point = 2,
                 AssignedUserId = user1.Id,
                 AssignedAt = DateTimeOffset.UtcNow,
-                CreatedAt = DateTimeOffset.UtcNow
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = user1.Id
             };
 
             await context.TaskItems.AddRangeAsync(task1, task2, task3, task4);
@@ -186,7 +190,8 @@ namespace Trava.Infrastructure.Extensions
                     TaskItemId = task2.Id,
                     UserId = admin.Id,
                     Content = "Please focus on refresh token implementation as well.",
-                    CreatedAt = DateTimeOffset.UtcNow.AddHours(-2)
+                    CreatedAt = DateTimeOffset.UtcNow.AddHours(-2),
+                    CreatedBy = admin.Id
                 },
                 new TaskComment
                 {
@@ -194,7 +199,8 @@ namespace Trava.Infrastructure.Extensions
                     TaskItemId = task2.Id,
                     UserId = user1.Id,
                     Content = "Will do. I'm currently working on the middleare.",
-                    CreatedAt = DateTimeOffset.UtcNow.AddHours(-1)
+                    CreatedAt = DateTimeOffset.UtcNow.AddHours(-1),
+                    CreatedBy = user1.Id
                 }
             };
 
