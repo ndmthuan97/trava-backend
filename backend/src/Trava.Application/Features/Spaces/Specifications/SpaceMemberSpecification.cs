@@ -5,12 +5,14 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Trava.Application.Common.Specifications;
 using Trava.Domain.Entities;
+using Trava.Domain.Enums;
 
 namespace Trava.Application.Features.Spaces.Specifications;
 
 public class SpaceMemberSpecParam : BaseSpecParam
 {
     public Guid? SpaceId { get; set; }
+    public SpaceRole? SpaceRole { get; set; }
 }
 
 public class SpaceMemberSpecification : ISpecification<User>
@@ -36,8 +38,8 @@ public class SpaceMemberSpecification : ISpecification<User>
                     EF.Functions.ILike(u.FullName, $"%{param.SearchTerm}%") ||
                     EF.Functions.ILike(u.Email, $"%{param.SearchTerm}%")) &&
                     (!param.SpaceId.HasValue || 
-                     u.SpaceMembers.Any(sm => sm.SpaceId == param.SpaceId) || 
-                     u.Spaces.Any(s => s.Id == param.SpaceId));
+                     u.SpaceMembers.Any(sm => sm.SpaceId == param.SpaceId && (!param.SpaceRole.HasValue || sm.SpaceRole == param.SpaceRole)) || 
+                     (u.Spaces.Any(s => s.Id == param.SpaceId) && (!param.SpaceRole.HasValue || param.SpaceRole == SpaceRole.Owner)));
     }
 
     private static Func<IQueryable<User>, IOrderedQueryable<User>>? BuildOrderBy(SpaceMemberSpecParam param)

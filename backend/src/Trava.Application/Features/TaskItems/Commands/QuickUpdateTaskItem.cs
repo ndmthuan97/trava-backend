@@ -18,6 +18,7 @@ namespace Trava.Application.Features.TaskItems.Commands
         TaskItemStatus? Status,
         DateTimeOffset? StartDate,
         DateTimeOffset? DueDate,
+        int? Point,
         [property: JsonIgnore] Guid UserId
     ) : IRequest;
 
@@ -89,6 +90,11 @@ namespace Trava.Application.Features.TaskItems.Commands
                 taskItem.DueDate = request.DueDate.Value;
             }
 
+            if (request.Point.HasValue)
+            {
+                taskItem.Point = request.Point.Value;
+            }
+
             taskItemRepo.Update(taskItem);
             await _unitOfWork.CommitAsync();
 
@@ -142,6 +148,10 @@ namespace Trava.Application.Features.TaskItems.Commands
             RuleFor(x => x)
                 .Must(x => !x.StartDate.HasValue || !x.DueDate.HasValue || x.StartDate <= x.DueDate)
                 .WithMessage("StartDate must be earlier than DueDate.");
+
+            When(x => x.Point.HasValue, () => {
+                RuleFor(x => x.Point!.Value).InclusiveBetween(1, 10).WithMessage("Point must be between 1 and 10.");
+            });
         }
     }
 }
