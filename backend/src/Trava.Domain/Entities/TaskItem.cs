@@ -24,6 +24,7 @@ namespace Trava.Domain.Entities
         // Navigation properties
         public virtual Space Space { get; set; } = default!;
         public virtual User? AssignedUser { get; set; } = null;
+        public virtual User Creator { get; set; } = default!;
         public virtual ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
     }
 }

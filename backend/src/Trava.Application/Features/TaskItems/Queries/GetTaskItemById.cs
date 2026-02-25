@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,10 @@ namespace Trava.Application.Features.TaskItems.Queries
 
         public async Task<TaskItemResponse> Handle(GetTaskItemByIdQuery request, CancellationToken cancellationToken)
         {
-            var taskItem = await _unitOfWork.GetRepository<TaskItem, Guid>().GetByIdAsync(request.Id) ?? throw new AppException(CustomCode.TaskItemNotFound);
+            var taskItem = await _unitOfWork.GetRepository<TaskItem, Guid>()
+                .FirstOrDefaultAsync(x => x.Id == request.Id, q => q.Include(t => t.Creator)) 
+                ?? throw new AppException(CustomCode.TaskItemNotFound);
+            
             return _mapper.Map<TaskItemResponse>(taskItem);
         }
     }

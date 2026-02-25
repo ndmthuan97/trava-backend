@@ -38,6 +38,7 @@ namespace Trava.Application.Features.TaskItems.Specifications
             OrderBy = BuildOrderBy(param);
             Skip = (param.PageIndex - 1) * param.PageSize;
             Take = param.PageSize;
+            Includes.Add(x => x.Creator);
         }
 
         private static Func<IQueryable<TaskItem>, IOrderedQueryable<TaskItem>>? BuildOrderBy(TaskItemSpecParam param)

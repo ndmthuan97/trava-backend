@@ -30,15 +30,10 @@ namespace Trava.Application.Features.TaskItems.Queries
             var commentRepo = _unitOfWork.GetRepository<TaskComment, Guid>();
             
             var comments = await commentRepo.GetListAsync(
-                predicate: x => x.TaskItemId == request.TaskItemId,
-                include: q => q.Include(c => c.User),
-                cancellationToken: cancellationToken
+                x => x.TaskItemId == request.TaskItemId,
+                q => q.Include(c => c.User),
+                cancellationToken
             );
-
-            // Manual include if repository doesn't support it well via generic
-            // But let's assume mapper handles it if we can get the queryable or if repo includes it.
-            // Actually, looking at IGenericRepository, it has include parameter.
-            
             return _mapper.Map<List<TaskCommentResponse>>(comments.OrderBy(c => c.CreatedAt));
         }
     }

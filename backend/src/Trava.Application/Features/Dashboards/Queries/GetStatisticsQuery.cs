@@ -23,23 +23,45 @@ namespace Trava.Application.Features.Dashboards.Queries
         {
             var userRepo = _unitOfWork.GetRepository<User, Guid>();
             var spaceRepo = _unitOfWork.GetRepository<Space, Guid>();
+            var taskRepo = _unitOfWork.GetRepository<TaskItem, Guid>();
 
-            // 1. Total Users
-            var totalUsers = await userRepo.CountAsync(u => true, cancellationToken);
+            var now = DateTimeOffset.UtcNow;
+            var oneWeekAgo = now.AddDays(-7);
+            var twoWeeksAgo = now.AddDays(-14);
 
-            // 2. Total Spaces
-            var totalSpaces = await spaceRepo.CountAsync(s => true, cancellationToken);
+            // 1. Users
+            var totalUsersNow = await userRepo.CountAsync(u => true, cancellationToken);
+            var totalUsersPrev = await userRepo.CountAsync(u => u.CreatedAt <= oneWeekAgo, cancellationToken);
 
-            // 3. Returning Users within last week (logged in at least once in the last 7 days)
-            var oneWeekAgo = DateTimeOffset.UtcNow.AddDays(-7);
-            var returningUsers = await userRepo.CountAsync(u => u.LastLoginAt >= oneWeekAgo, cancellationToken);
+            // 2. Spaces
+            var totalSpacesNow = await spaceRepo.CountAsync(s => true, cancellationToken);
+            var totalSpacesPrev = await spaceRepo.CountAsync(s => s.CreatedAt <= oneWeekAgo, cancellationToken);
+
+            // 3. Tasks
+            var totalTasksNow = await taskRepo.CountAsync(t => true, cancellationToken);
+            var totalTasksPrev = await taskRepo.CountAsync(t => t.CreatedAt <= oneWeekAgo, cancellationToken);
+
+            // 4. Returning Users (logged in within the period)
+            var returningUsersThisWeek = await userRepo.CountAsync(u => u.LastLoginAt >= oneWeekAgo, cancellationToken);
+            var returningUsersLastWeek = await userRepo.CountAsync(u => u.LastLoginAt >= twoWeeksAgo && u.LastLoginAt < oneWeekAgo, cancellationToken);
 
             return new StatisticsResponse
             {
-                TotalUsers = totalUsers,
-                TotalSpaces = totalSpaces,
-                ReturningUsersLastWeek = returningUsers
+                TotalUsers = totalUsersNow,
+                UserGrowth = CalculateGrowth(totalUsersNow, totalUsersPrev),
+                TotalSpaces = totalSpacesNow,
+                SpaceGrowth = CalculateGrowth(totalSpacesNow, totalSpacesPrev),
+                TotalTasks = totalTasksNow,
+                TaskGrowth = CalculateGrowth(totalTasksNow, totalTasksPrev),
+                ReturningUsers = returningUsersThisWeek,
+                ReturningUserRate = totalUsersNow > 0 ? Math.Round((double)returningUsersThisWeek / totalUsersNow * 100, 2) : 0
             };
+        }
+
+        private double CalculateGrowth(int current, int previous)
+        {
+            if (previous == 0) return current * 100; // e.g. from 0 to 1 is 100% growth
+            return Math.Round((double)(current - previous) / previous * 100, 2);
         }
     }
 }

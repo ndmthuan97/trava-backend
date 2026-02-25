@@ -7,8 +7,8 @@ namespace Trava.Application.Features.TaskItems.Responses
         public Guid Id { get; init; }
         public Guid TaskItemId { get; init; }
         public Guid UserId { get; init; }
-        public string? UserFullName { get; init; }
-        public string? UserAvatarUrl { get; init; }
+        public string? FullName { get; init; }
+        public string? AvatarUrl { get; init; }
         public string Content { get; init; } = default!;
         public DateTimeOffset CreatedAt { get; init; }
     }

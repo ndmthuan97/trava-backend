@@ -17,5 +17,7 @@ namespace Trava.Application.Features.TaskItems.Responses
         public Guid? AssignedUserId { get; init; }
         public DateTimeOffset? AssignedAt { get; init; }
         public DateTimeOffset? CompletedAt { get; init; }
+        public string? CreatorFullName { get; init; }
+        public string? CreatorAvatarUrl { get; init; }
     }
 }

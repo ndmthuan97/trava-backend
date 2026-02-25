@@ -54,6 +54,11 @@ namespace Trava.Infrastructure.Persistence.Configurations
                 .WithMany(x => x.AssignedTasks)
                 .HasForeignKey(x => x.AssignedUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+            
+            builder.HasOne(x => x.Creator)
+                .WithMany()
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(x => x.Comments)
                 .WithOne(x => x.TaskItem)

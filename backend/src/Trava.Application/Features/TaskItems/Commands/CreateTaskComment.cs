@@ -53,7 +53,8 @@ namespace Trava.Application.Features.TaskItems.Commands
             {
                 TaskItemId = request.TaskItemId,
                 UserId = request.UserId,
-                Content = request.Content
+                Content = request.Content,
+                CreatedBy = request.UserId
             };
 
             await commentRepo.AddAsync(comment);
@@ -69,7 +70,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                 CommentContent = comment.Content,
                 SenderName = commenterName,
                 SenderAvatarUrl = user.AvatarUrl,
-                Message = $"{commenterName} commented on task \"{taskItem.Title}\"."
+                Message = $"{commenterName} commented: \"{comment.Content}\" on task \"{taskItem.Title}\"."
             };
 
             // Notify relevant people: Assignee and Space Owner
@@ -108,7 +109,7 @@ namespace Trava.Application.Features.TaskItems.Commands
             }
 
             var response = _mapper.Map<TaskCommentResponse>(comment);
-            return response with { UserFullName = user.FullName, UserAvatarUrl = user.AvatarUrl };
+            return response with { FullName = user.FullName, AvatarUrl = user.AvatarUrl };
         }
     }
 
