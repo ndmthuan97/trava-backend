@@ -27,37 +27,32 @@ namespace Trava.Application.Features.Dashboards.Queries
 
             var now = DateTimeOffset.UtcNow;
             var oneWeekAgo = now.AddDays(-7);
-            var twoWeeksAgo = now.AddDays(-14);
 
             // 1. Users
             var totalUsersNow = await userRepo.CountAsync(u => true, cancellationToken);
             var totalUsersPrev = await userRepo.CountAsync(u => u.CreatedAt <= oneWeekAgo, cancellationToken);
-            var totalUsersTwoWeeksAgo = await userRepo.CountAsync(u => u.CreatedAt <= twoWeeksAgo, cancellationToken);
 
             // 2. Spaces
             var totalSpacesNow = await spaceRepo.CountAsync(s => true, cancellationToken);
             var totalSpacesPrev = await spaceRepo.CountAsync(s => s.CreatedAt <= oneWeekAgo, cancellationToken);
-            var totalSpacesTwoWeeksAgo = await spaceRepo.CountAsync(s => s.CreatedAt <= twoWeeksAgo, cancellationToken);
 
             // 3. Tasks
             var totalTasksNow = await taskRepo.CountAsync(t => true, cancellationToken);
             var totalTasksPrev = await taskRepo.CountAsync(t => t.CreatedAt <= oneWeekAgo, cancellationToken);
-            var totalTasksTwoWeeksAgo = await taskRepo.CountAsync(t => t.CreatedAt <= twoWeeksAgo, cancellationToken);
 
             // 4. Returning Users (logged in within the period)
             var returningUsersThisWeek = await userRepo.CountAsync(u => u.LastLoginAt >= oneWeekAgo, cancellationToken);
-            var returningUsersLastWeek = await userRepo.CountAsync(u => u.LastLoginAt >= twoWeeksAgo && u.LastLoginAt < oneWeekAgo, cancellationToken);
 
             return new StatisticsResponse
             {
                 TotalUsers = totalUsersNow,
-                TotalUsersTwoWeeksAgo = totalUsersTwoWeeksAgo,
+                TotalUsersLastWeek = totalUsersPrev,
                 UserGrowth = CalculateGrowth(totalUsersNow, totalUsersPrev),
                 TotalSpaces = totalSpacesNow,
-                TotalSpacesTwoWeeksAgo = totalSpacesTwoWeeksAgo,
+                TotalSpacesLastWeek = totalSpacesPrev,
                 SpaceGrowth = CalculateGrowth(totalSpacesNow, totalSpacesPrev),
                 TotalTasks = totalTasksNow,
-                TotalTasksTwoWeeksAgo = totalTasksTwoWeeksAgo,
+                TotalTasksLastWeek = totalTasksPrev,
                 TaskGrowth = CalculateGrowth(totalTasksNow, totalTasksPrev),
                 ReturningUsers = returningUsersThisWeek,
                 ReturningUserRate = totalUsersNow > 0 ? Math.Round((double)returningUsersThisWeek / totalUsersNow * 100, 2) : 0
