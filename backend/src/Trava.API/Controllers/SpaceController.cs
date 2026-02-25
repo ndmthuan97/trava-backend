@@ -66,6 +66,17 @@ namespace Trava.API.Controllers
             });
         }
 
+        [HttpGet("{id:guid}/statistics")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<SpaceStatisticsResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetSpaceStatistics([FromRoute] Guid id)
+        {
+            return await HandleRequestAsync(async () =>
+            {
+                return (CustomCode.Success, await _mediator.Send(new GetSpaceStatisticsQuery(id)));
+            });
+        }
+
         [HttpGet("members")]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<Pagination<UserResponse>>), StatusCodes.Status200OK)]
