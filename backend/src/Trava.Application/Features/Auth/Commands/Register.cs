@@ -50,11 +50,11 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CustomCod
         // Send Welcome Notification
         await _hubNotificationService.SendNotificationToUserAsync(
             newUser.Id,
-            "Welcome",
+            "Welcome to Trava",
             new
             {
-                Title = "Welcome to Trava!",
-                Message = $"Hello {newUser.FullName}, welcome to Trava! We're glad to have you here. Let's start managing your tasks efficiently."
+                Title = "Account Successfully Created",
+                Message = $"Hello {newUser.FullName}, welcome to Trava! We're delighted to have you. Let's start managing your projects efficiently together."
             });
 
         return CustomCode.Success;

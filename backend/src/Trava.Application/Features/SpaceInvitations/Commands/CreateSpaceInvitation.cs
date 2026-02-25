@@ -53,7 +53,7 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
 
                 await _hubNotificationService.SendNotificationToUserAsync(
                     request.InvitedUserId,
-                    "Space Invitation",
+                    "New Workspace Invitation",
                     new
                     {
                         SpaceId = space.Id,

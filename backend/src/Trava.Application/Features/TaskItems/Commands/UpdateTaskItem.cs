@@ -77,7 +77,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                 var updater = await userRepo.GetByIdAsync(request.UpdatedBy);
                 await _hubNotificationService.SendNotificationToUserAsync(
                     taskItem.AssignedUserId.Value,
-                    "Task Assigned",
+                    "New Task Assignment",
                     new
                     {
                         TaskId = taskItem.Id,
@@ -85,7 +85,7 @@ namespace Trava.Application.Features.TaskItems.Commands
                         SpaceName = space.Name,
                         SenderName = updater?.FullName ?? updater?.Email ?? "Administrator",
                         SenderAvatarUrl = updater?.AvatarUrl,
-                        Message = $"You have been assigned a new task: \"{taskItem.Title}\" in space \"{space.Name}\"."
+                        Message = $"You have been assigned to a new task: \"{taskItem.Title}\" in workspace \"{space.Name}\"."
                     });
             }
 
@@ -111,14 +111,14 @@ namespace Trava.Application.Features.TaskItems.Commands
 
                     await _hubNotificationService.SendNotificationToUserAsync(
                         ownerId,
-                        "Task Completed",
+                        "Task Successfully Completed",
                         new
                         {
                             TaskId = taskItem.Id,
                             Title = taskItem.Title,
                             SenderName = userName,
                             SenderAvatarUrl = user?.AvatarUrl,
-                            Message = $"The task \"{taskItem.Title}\" was completed by {userName}."
+                            Message = $"The task \"{taskItem.Title}\" has been successfully completed by {userName}."
                         });
                 }
             }

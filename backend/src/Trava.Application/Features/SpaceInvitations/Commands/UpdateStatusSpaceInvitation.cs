@@ -83,25 +83,25 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                     // Notify Owner
                     await _hubNotificationService.SendNotificationToUserAsync(
                         space.CreatedBy,
-                        "Invitation Accepted",
+                        "Workspace Invitation Accepted",
                         new
                         {
                             SpaceId = space.Id,
                             SpaceName = space.Name,
                             SenderName = invitedUserName,
                             SenderAvatarUrl = invitedUserAvatar,
-                            Message = $"{invitedUserName} accepted the invitation to join space \"{space.Name}\"."
+                            Message = $"{invitedUserName} has accepted your invitation to join \"{space.Name}\"."
                         });
  
                     // Welcome Notification to User who joined
                     await _hubNotificationService.SendNotificationToUserAsync(
                         invitation.InvitedUserId,
-                        "Space Welcome",
+                        "Welcome to Your Workspace",
                         new
                         {
                             SpaceId = space.Id,
                             SpaceName = space.Name,
-                            Message = $"Welcome to {space.Name}! You can now start working, connecting with members and collaborating effectively."
+                            Message = $"Welcome to {space.Name}! You can now start collaborating with your team effectively."
                         });
                 }
                 else
@@ -109,14 +109,14 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                     // Notify Owner of rejection
                     await _hubNotificationService.SendNotificationToUserAsync(
                         space.CreatedBy,
-                        "Invitation Rejected",
+                        "Workspace Invitation Declined",
                         new
                         {
                             SpaceId = space.Id,
                             SpaceName = space.Name,
                             SenderName = invitedUserName,
                             SenderAvatarUrl = invitedUserAvatar,
-                            Message = $"{invitedUserName} rejected the invitation to join space \"{space.Name}\"."
+                            Message = $"{invitedUserName} has declined the invitation to join \"{space.Name}\"."
                         });
                 }
             }
