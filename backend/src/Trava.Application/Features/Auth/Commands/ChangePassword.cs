@@ -11,11 +11,11 @@ using System.Text.Json.Serialization;
 namespace Trava.Application.Features.Auth.Commands;
 
 public record ChangePasswordCommand(
-    [property: JsonIgnore] Guid UserId,
+    [property: JsonIgnore] Guid? UserId,
     string CurrentPassword,
     string NewPassword,
     string ConfirmPassword,
-    [property: JsonIgnore] string CurrentAccessToken
+    [property: JsonIgnore] string? CurrentAccessToken
 ) : IRequest<CustomCode>;
 
 public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, CustomCode>
@@ -36,8 +36,11 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
     public async Task<CustomCode> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
+        if (request.UserId is null || request.UserId == Guid.Empty)
+            throw new AppException(CustomCode.UserIdNotFound);
+
         var userRepo = _unitOfWork.GetRepository<User, Guid>();
-        var user = await userRepo.GetByIdAsync(request.UserId) ?? throw new AppException(CustomCode.UserNotExists);
+        var user = await userRepo.GetByIdAsync(request.UserId.Value) ?? throw new AppException(CustomCode.UserNotExists);
 
         if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password)) throw new AppException(CustomCode.InvalidCredentials);
 
@@ -51,8 +54,8 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         userRepo.Update(user);
         await _unitOfWork.CommitAsync();
 
-        await _tokenRegistryService.RevokeRefreshTokenAsync(request.UserId.ToString());
-        _logger.LogInformation("RefreshToken revoked for user {UserId} after password change", request.UserId);
+        await _tokenRegistryService.RevokeRefreshTokenAsync(request.UserId.Value.ToString());
+        _logger.LogInformation("RefreshToken revoked for user {UserId} after password change", request.UserId.Value);
 
         return CustomCode.Success;
     }
