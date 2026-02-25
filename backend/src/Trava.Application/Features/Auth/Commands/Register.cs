@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Trava.Application.Common.Exceptions;
+using Trava.Application.Common.Helpers;
 using Trava.Application.Interfaces;
 using Trava.Application.Interfaces.Services;
 using Trava.Domain.Entities;
@@ -76,6 +77,6 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password is required.")
-            .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
+            .StrongPassword();
     }
 }

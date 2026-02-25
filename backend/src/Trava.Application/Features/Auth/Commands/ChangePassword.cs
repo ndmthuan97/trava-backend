@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Trava.Application.Common.Exceptions;
+using Trava.Application.Common.Helpers;
 using Trava.Application.Interfaces;
 using Trava.Application.Interfaces.Services;
 using Trava.Domain.Entities;
@@ -68,8 +69,8 @@ public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCo
         RuleFor(x => x.CurrentPassword).NotEmpty().WithMessage("Current Password is required");
 
         RuleFor(x => x.NewPassword)
-            .NotEmpty().WithMessage("New Password is required")
-            .MinimumLength(8).WithMessage("Password must be at least 8 characters long.");
+            .NotEmpty().WithMessage("New Password is required.")
+            .StrongPassword();
 
         RuleFor(x => x.ConfirmPassword)
             .NotEmpty().WithMessage("Confirm Password is required.")
