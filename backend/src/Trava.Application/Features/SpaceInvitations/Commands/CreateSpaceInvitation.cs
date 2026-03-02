@@ -88,6 +88,14 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
                 .MustAsync(async (id, ct) =>
                     await userRepo.ExistsAsync(u => u.Id == id))
                 .WithMessage("User does not exist.");
+
+            RuleFor(x => x)
+                .MustAsync(async (command, ct) =>
+                {
+                    var space = await spaceRepo.GetByIdAsync(command.SpaceId);
+                    return space != null && space.SpaceType != SpaceType.Personal;
+                })
+                .WithMessage("Cannot invite members to a Personal space.");
         }
     }
 }

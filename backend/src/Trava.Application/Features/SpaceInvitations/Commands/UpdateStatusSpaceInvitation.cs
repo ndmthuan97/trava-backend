@@ -53,6 +53,14 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             if (request.InvitationStatus is not (InvitationStatus.Accepted or InvitationStatus.Rejected))
                 throw new AppException(CustomCode.InvalidInvitationStatusTransition);
 
+            var space = await spaceRepo.GetByIdAsync(invitation.SpaceId)
+                ?? throw new AppException(CustomCode.SpaceNotFound);
+
+            if (request.InvitationStatus == InvitationStatus.Accepted && space.SpaceType != SpaceType.Team)
+            {
+                throw new AppException(CustomCode.UnauthorizedAction);
+            }
+
             invitation.Status = request.InvitationStatus;
 
             invitationRepo.Update(invitation);
