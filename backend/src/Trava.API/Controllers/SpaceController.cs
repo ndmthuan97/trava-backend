@@ -113,5 +113,17 @@ namespace Trava.API.Controllers
 
             return await HandleRequestAsync(() => _mediator.Send(command with { Id = id }), CustomCode.Updated);
         }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteSpace([FromRoute] Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userId, out var userIdGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            return await HandleRequestAsync(() => _mediator.Send(new DeleteSpaceCommand(id, userIdGuid)), CustomCode.Deleted);
+        }
     }
 }
