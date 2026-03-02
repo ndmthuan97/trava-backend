@@ -37,8 +37,8 @@ public class UserSpecification : ISpecification<User>
     private static Expression<Func<User, bool>> BuildCriteria(UserSpecParam param)
     {
         return u => (string.IsNullOrWhiteSpace(param.SearchTerm) ||
-                    EF.Functions.ILike(u.FullName, $"%{param.SearchTerm}%") ||
-                    EF.Functions.ILike(u.Email, $"%{param.SearchTerm}%")) &&
+                    EF.Functions.ILike(u.FullName ?? string.Empty, $"%{param.SearchTerm}%") ||
+                    EF.Functions.ILike(u.Email ?? string.Empty, $"%{param.SearchTerm}%")) &&
                     (!param.Role.HasValue || u.Role == param.Role.Value) &&
                     (!param.Status.HasValue || u.Status == param.Status.Value);
     }

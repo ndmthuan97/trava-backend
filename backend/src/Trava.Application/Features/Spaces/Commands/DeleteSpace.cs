@@ -33,7 +33,7 @@ namespace Trava.Application.Features.Spaces.Commands
 
             if (space == null)
             {
-                throw new AppException(CustomCode.SpaceNotFound, "Space not found.");
+                throw new AppException(CustomCode.SpaceNotFound);
             }
 
             // Authorization: Only owner can delete
@@ -47,12 +47,12 @@ namespace Trava.Application.Features.Spaces.Commands
 
                     if (member == null || member.SpaceRole != SpaceRole.Owner)
                     {
-                        throw new AppException(CustomCode.UnauthorizedAction, "You do not have permission to delete this space.");
+                        throw new AppException(CustomCode.UnauthorizedAction);
                     }
                 }
                 else
                 {
-                    throw new AppException(CustomCode.UnauthorizedAction, "You do not have permission to delete this space.");
+                    throw new AppException(CustomCode.UnauthorizedAction);
                 }
             }
 

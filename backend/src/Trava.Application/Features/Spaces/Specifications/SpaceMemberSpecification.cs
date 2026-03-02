@@ -35,8 +35,8 @@ public class SpaceMemberSpecification : ISpecification<User>
     private static Expression<Func<User, bool>> BuildCriteria(SpaceMemberSpecParam param)
     {
         return u => (string.IsNullOrWhiteSpace(param.SearchTerm) ||
-                    EF.Functions.ILike(u.FullName, $"%{param.SearchTerm}%") ||
-                    EF.Functions.ILike(u.Email, $"%{param.SearchTerm}%")) &&
+                    EF.Functions.ILike(u.FullName ?? string.Empty, $"%{param.SearchTerm}%") ||
+                    EF.Functions.ILike(u.Email ?? string.Empty, $"%{param.SearchTerm}%")) &&
                     (!param.SpaceId.HasValue || 
                      u.SpaceMembers.Any(sm => sm.SpaceId == param.SpaceId && (!param.SpaceRole.HasValue || sm.SpaceRole == param.SpaceRole)) || 
                      (u.Spaces.Any(s => s.Id == param.SpaceId) && (!param.SpaceRole.HasValue || param.SpaceRole == SpaceRole.Owner)));

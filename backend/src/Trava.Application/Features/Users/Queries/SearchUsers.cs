@@ -32,8 +32,8 @@ namespace Trava.Application.Features.Users.Queries
             var users = await userRepo.GetListAsync(u => 
                 u.Status == UserStatus.Active &&
                 (string.IsNullOrWhiteSpace(request.SearchTerm) ||
-                 EF.Functions.ILike(u.FullName, $"%{request.SearchTerm}%") ||
-                 EF.Functions.ILike(u.Email, $"%{request.SearchTerm}%")),
+                 EF.Functions.ILike(u.FullName ?? string.Empty, $"%{request.SearchTerm}%") ||
+                 EF.Functions.ILike(u.Email ?? string.Empty, $"%{request.SearchTerm}%")),
                 cancellationToken: cancellationToken);
 
             return _mapper.Map<List<UserSearchResponse>>(users);
