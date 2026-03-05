@@ -95,10 +95,4 @@ dotnet run
 Sau khi khởi động thành công, bạn có thể truy cập `/swagger` để xem tài liệu API chi tiết.
 
 ---
-
-## 📄 Tài Liệu Liên Quan
-*   [Dự án Requirements & Scope](./documents/PROJECT_REQUIREMENTS_AND_SCOPE.md)
-*   [Hướng dẫn Kiến trúc Kỹ thuật](./documents/TECHNICAL_ARCHITECH.md)
-
----
 Developed with ❤️ by Minh Thuan.
