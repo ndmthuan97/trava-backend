@@ -1,53 +1,104 @@
-# Trava Backend
+# 🚀 Trava Backend - Productivity & Team Collaboration Platform
 
-## Tổng quan dự án (Project Overview)
-**Trava** là một hệ thống quản lý công việc và cộng tác nhóm mạnh mẽ, được xây dựng trên nền tảng .NET hiện đại. Dự án tập trung vào việc cung cấp các công cụ để quản lý không gian làm việc (Spaces), quản lý task (Task Items), và hỗ trợ tương tác giữa các thành viên trong nhóm thông qua hệ thống lời mời và thông báo.
+[![Framework](https://img.shields.io/badge/.NET-8.0-512bd4.svg?logo=dotnet)]()
+[![Database](https://img.shields.io/badge/PostgreSQL-4169e1.svg?logo=postgresql&logoColor=white)]()
+[![Cache](https://img.shields.io/badge/Redis-dc382d.svg?logo=redis&logoColor=white)]()
+[![Architecture](https://img.shields.io/badge/Clean-Architecture-blue.svg)]()
 
-## Kiến trúc hệ thống (Architecture)
-Dự án được thiết kế theo mô hình **Clean Architecture** (Kiến trúc sạch) nhằm đảm bảo tính linh hoạt, dễ bảo trì và dễ dàng mở rộng:
+**Trava** là một hệ thống backend mạnh mẽ hỗ trợ quản lý công việc và cộng tác nhóm, được xây dựng trên nền tảng .NET hiện đại. Dự án cung cấp các giải pháp tối ưu cho việc tổ chức không gian làm việc (Spaces), quản lý hạng mục công việc (Tasks), và tương tác thời gian thực giữa các thành viên.
 
-- **Trava.Domain**: Chứa các thực thể lõi (Entities), logic nghiệp vụ cơ bản, các hằng số và kiểu liệt kê (Enums). Đây là trung tâm của hệ thống và không phụ thuộc vào bất kỳ thư viện bên ngoài nào.
-- **Trava.Application**: Chứa logic ứng dụng, các Command/Query (sử dụng pattern CQRS), DTOs và các Interfaces. Đây là nơi định nghĩa các quy trình nghiệp vụ ví dụ như tạo task, gán task, hay xác thực người dùng.
-- **Trava.Infrastructure**: Triển khai các chi tiết kỹ thuật như truy xuất cơ sở dữ liệu (EF Core), Caching (Redis), và các dịch vụ bên thứ ba (Ví dụ: lưu trữ token).
-- **Trava.API**: Lớp hiển thị (Presentation Layer), cung cấp các RESTful API endpoints cho phía Frontend hoặc các ứng dụng bên thứ ba tiêu thụ.
-- **Trava.Shared**: Chứa các mã nguồn dùng chung, tiện ích và các model chia sẻ giữa các project.
+---
 
-## Công nghệ sử dụng (Tech Stack)
-- **Framework**: .NET 8.0
-- **Database**: PostgreSQL (Thông qua Entity Framework Core)
-- **Caching**: Redis
-- **Security**: JWT Authentication (JSON Web Token)
-- **Pattern**: CQRS (MediatR), Repository Pattern, Unit of Work
-- **Documentation**: Swagger/OpenAPI
-- **API Management**: Rate Limiting, CORS Configuration
+## 🏛️ Kiến Trúc Hệ Thống (Architecture)
 
-## Các tính năng chính (Core Features)
-- **Quản lý xác thực (Authentication)**: Đăng nhập, đăng ký và bảo mật bằng JWT.
-- **Quản lý không gian làm việc (Spaces)**: Tạo, cập nhật không gian làm việc và quản lý thành viên.
-- **Hệ thống lời mời (Space Invitations)**: Gửi và quản lý lời mời tham gia không gian làm việc.
-- **Quản lý công việc (Task Management)**:
-    - Tạo, cập nhật, xóa các đầu việc (Task Items).
-    - Gán người thực hiện công việc (Assignment).
-    - Theo dõi trạng thái hoàn thành công việc.
-    - Bình luận trên các task (Task Comments).
-- **Hệ thống thông báo (Notifications)**: Gửi thông báo đến người dùng về các thay đổi quan trọng hoặc lời mời.
+Dự án tuân thủ nghiêm ngặt mô hình **Clean Architecture**, giúp tách biệt rõ ràng các mối quan tâm (Separation of Concerns), đảm bảo hệ thống dễ dàng bảo trì và mở rộng.
 
-## Cấu trúc thư mục
-```text
+| Project Component | Trách nhiệm |
+| :--- | :--- |
+| **`Trava.Domain`** | Core Entities, Enums, Domain Logic & Interfaces. Không phụ thuộc vào Layer khác. |
+| **`Trava.Application`** | Logic ứng dụng, CQRS (MediatR), DTOs, Validation (FluentValidation), Mapping (AutoMapper). |
+| **`Trava.Infrastructure`** | Persistence (EF Core, PostgreSQL), Repositories, Redis, Services (JWT, Email). |
+| **`Trava.API`** | Presentation Layer, RESTful Endpoints, Auth Middleware, Global Exception Handling. |
+| **`Trava.Shared`** | Common Utilities, Constants, Shared Models & Custom Exception Codes. |
+
+---
+
+## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
+
+### Core Frameworks & Patterns
+*   **Backend Framework:** .NET 8.0 SDK
+*   **Architecture Pattern:** Clean Architecture, CQRS (MediatR), Repository Pattern, Unit of Work.
+*   **Validation:** FluentValidation cho việc thực thi các quy tắc nghiệp vụ.
+*   **Object Mapping:** AutoMapper để chuyển đổi linh hoạt giữa Entity và DTO.
+*   **API Management:** RESTful API, Swagger/OpenAPI, Rate Limiting, CORS.
+
+### Data & Infrastructure
+*   **Cơ sở dữ liệu:** PostgreSQL (thông qua Entity Framework Core).
+*   **Caching:** Redis (Distributed Caching) giúp tăng tốc độ phản hồi API.
+*   **Security:** JWT Authentication (JSON Web Token) bảo mật các endpoint.
+*   **Real-time (Planned):** SignalR cho hệ thống đẩy thông báo tức thời.
+*   **Background Workers:** Lên lịch công việc định kỳ (Dự kiến: Quartz.NET / Hangfire).
+
+---
+
+## ✨ Tính Năng Chính (Core Features)
+
+*   🔐 **Quản lý Hội viên:** Đăng ký, đăng nhập bảo mật, quản lý thông tin cá nhân và cập nhật bảo mật.
+*   🏢 **Quản lý Không gian làm việc (Spaces):** Hỗ trợ mô hình Space **Cá nhân** (Private) và **Đội nhóm** (Team) với cơ chế phân quyền rõ ràng.
+*   📩 **Hệ thống Lời mời:** Cơ chế gửi/nhận lời mời tham gia Workspace, quản lý trạng thái lời mời theo thời gian thực.
+*   ✅ **Quản lý Công việc (Task Management):** 
+    *   Hỗ trợ cấu trúc Task phức tạp (Parent/Sub-tasks).
+    *   Quản lý độ ưu tiên (Low to Urgent) và khối lượng công việc (Points).
+    *   Tương tác trực tiếp qua hệ thống bình luận (Comments).
+*   🔔 **Hệ thống Thông báo:** Cung cấp thông tin cập nhật về thay đổi Space, phân công Task và nhắc nhở thời hạn.
+
+---
+
+## 📂 Cấu Trúc Mã Nguồn (Directory Structure)
+
+```bash
 backend/src/
-├── Trava.API/           # REST API Endpoints & Configuration
-├── Trava.Application/   # Logic ứng dụng, Commands & Queries
-├── Trava.Domain/        # Core Entities & Domain Logic
-├── Trava.Infrastructure/# DB Context, Repositories, Redis, Services
-└── Trava.Shared/        # Utilities & Shared Models
+├── Trava.API/            # REST API Endpoints & Configuration
+├── Trava.Application/    # Logic ứng dụng, Commands & Queries
+├── Trava.Domain/         # Core Entities & Domain Models
+├── Trava.Infrastructure/ # DB Context, Repositories & External Services
+└── Trava.Shared/         # Utilities, Constants & Shared Models
 ```
 
-## Hướng dẫn chạy dự án
-1. **Yêu cầu**: Cài đặt .NET 8.0 SDK, Redis Server và PostgreSQL.
-2. **Cấu hình**: Cập nhật Connection String và Redis Connection trong file `appsettings.json` (hoặc `.env`).
-3. **Chạy ứng dụng**:
-   ```bash
-   cd backend/src/Trava.API
-   dotnet run
-   ```
-4. **Tài liệu API**: Truy cập `/swagger` sau khi chạy ứng dụng để xem tài liệu chi tiết.
+---
+
+## 🚀 Hướng Dẫn Cài Đặt (Getting Started)
+
+### 1. Yêu cầu hệ thống (Prerequisites)
+*   [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) trở lên.
+*   [PostgreSQL](https://www.postgresql.org/) server đã cài đặt.
+*   [Redis Server](https://redis.io/) (Local hoặc Cloud).
+
+### 2. Cấu hình môi trường (Configuration)
+Cập nhật các thông số kết nối trong file `appsettings.json` tại project `Trava.API`:
+*   `DefaultConnection`: Chuỗi kết nối tới PostgreSQL.
+*   `RedisConnection`: Địa chỉ kết nối tới Redis server.
+*   `Jwt:Key`: Khóa bí mật dùng để ký token.
+
+### 3. Khởi tạo Database
+Mở terminal và thực thi các lệnh sau để áp dụng các thay đổi cơ sở dữ liệu:
+```bash
+cd backend/src/Trava.Infrastructure
+dotnet ef database update --startup-project ../Trava.API/
+```
+
+### 4. Chạy dự án
+```bash
+cd backend/src/Trava.API
+dotnet run
+```
+Sau khi khởi động thành công, bạn có thể truy cập `/swagger` để xem tài liệu API chi tiết.
+
+---
+
+## 📄 Tài Liệu Liên Quan
+*   [Dự án Requirements & Scope](./documents/PROJECT_REQUIREMENTS_AND_SCOPE.md)
+*   [Hướng dẫn Kiến trúc Kỹ thuật](./documents/TECHNICAL_ARCHITECH.md)
+
+---
+Developed with ❤️ by Minh Thuan.
