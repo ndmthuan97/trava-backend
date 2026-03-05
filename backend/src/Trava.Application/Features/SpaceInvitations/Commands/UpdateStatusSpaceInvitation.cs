@@ -79,7 +79,6 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
             await _unitOfWork.CommitAsync();
 
             // Send Notification
-            var space = await spaceRepo.GetByIdAsync(invitation.SpaceId);
             if (space != null)
             {
                 var invitedUser = await userRepo.GetByIdAsync(invitation.InvitedUserId);
