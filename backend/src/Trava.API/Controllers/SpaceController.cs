@@ -88,6 +88,19 @@ namespace Trava.API.Controllers
             });
         }
 
+        [HttpDelete("{id:guid}/members/{userId:guid}")]
+        [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RemoveMember([FromRoute] Guid id, [FromRoute] Guid userId)
+        {
+            var requestedBy = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(requestedBy, out var requestedByGuid))
+                return Respond(CustomCode.UserIdNotFound);
+
+            return await HandleRequestAsync(() => _mediator.Send(new RemoveMemberCommand(id, userId, requestedByGuid)), CustomCode.Deleted);
+        }
+
+
         [HttpPost]
         [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.User)}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]

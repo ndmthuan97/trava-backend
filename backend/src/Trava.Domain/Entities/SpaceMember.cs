@@ -13,8 +13,11 @@ namespace Trava.Domain.Entities
         public SpaceRole SpaceRole { get; set; } = SpaceRole.Member;
         public DateTimeOffset JoinedAt { get; set; } = DateTimeOffset.UtcNow;
 
+        public Guid? DeletedBy { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
+
         // Navigation properties
         public virtual Space Space { get; set; } = default!;
         public virtual User User { get; set; } = default!;
     }
-}
+}

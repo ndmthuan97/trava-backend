@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,12 +33,33 @@ namespace Trava.Infrastructure.Persistence.Context
         {
             UpdateTimestamps<Guid>();
             UpdateTimestamps<int>();
+            UpdateSpaceMemberTimestamps();
             UpdateUserTimestamps();
+
 
             return await base.SaveChangesAsync(cancellationToken);
         }
 
+        private void UpdateSpaceMemberTimestamps()
+        {
+            var entries = ChangeTracker.Entries<SpaceMember>();
+
+            foreach (var entry in entries)
+            {
+                var entity = entry.Entity;
+
+                switch (entry.State)
+                {
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+                        entity.DeletedAt = DateTimeOffset.UtcNow;
+                        break;
+                }
+            }
+        }
+
         private void UpdateTimestamps<TKey>()
+
         {
             var entries = ChangeTracker.Entries<BaseTimeEntity<TKey>>();
 

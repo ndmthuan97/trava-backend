@@ -39,6 +39,8 @@ namespace Trava.Shared.Enums
         //Space Error
         SpaceNotFound = 4100,
         SpaceNameAlreadyExists = 4101,
+        MemberNotFoundInSpace = 4102,
+
 
         //TaskItem Error
         TaskItemNotFound = 4200,

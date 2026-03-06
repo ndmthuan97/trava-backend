@@ -80,9 +80,15 @@ namespace Trava.Infrastructure.Persistence.Repositories
         public async Task<TEntity?> FirstOrDefaultAsync(
             Expression<Func<TEntity, bool>> predicate,
             Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+            bool ignoreQueryFilters = false,
             CancellationToken cancellationToken = default)
         {
             IQueryable<TEntity> query = _dbSet;
+            
+            if (ignoreQueryFilters)
+            {
+                query = query.IgnoreQueryFilters();
+            }
 
             if (include != null)
             {

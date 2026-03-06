@@ -67,14 +67,30 @@ namespace Trava.Application.Features.SpaceInvitations.Commands
 
             if (invitation.Status == InvitationStatus.Accepted)
             {
-                var spaceMember = new SpaceMember
+                var existingMember = await spaceMemberRepo.FirstOrDefaultAsync(
+                    m => m.SpaceId == invitation.SpaceId && m.UserId == invitation.InvitedUserId,
+                    ignoreQueryFilters: true);
+
+                if (existingMember != null)
                 {
-                    SpaceId = invitation.SpaceId,
-                    UserId = invitation.InvitedUserId,
-                    SpaceRole = SpaceRole.Member,
-                };
-                await spaceMemberRepo.AddAsync(spaceMember);
+                    existingMember.DeletedAt = null;
+                    existingMember.DeletedBy = null;
+                    existingMember.SpaceRole = SpaceRole.Member;
+                    existingMember.JoinedAt = DateTimeOffset.UtcNow;
+                    spaceMemberRepo.Update(existingMember);
+                }
+                else
+                {
+                    var spaceMember = new SpaceMember
+                    {
+                        SpaceId = invitation.SpaceId,
+                        UserId = invitation.InvitedUserId,
+                        SpaceRole = SpaceRole.Member,
+                    };
+                    await spaceMemberRepo.AddAsync(spaceMember);
+                }
             }
+
 
             await _unitOfWork.CommitAsync();
 
