@@ -8,7 +8,7 @@ namespace Trava.Application.Features.TaskItems.Responses
         public Guid Id { get; init; }
         public Guid SpaceId { get; init; }
         public string Title { get; init; } = default!;
-        public string Description { get; init; } = default!;
+        public string? Description { get; init; }
         public TaskItemStatus Status { get; init; }
         public TaskItemPriority Priority { get; init; }
         public int Point { get; init; }

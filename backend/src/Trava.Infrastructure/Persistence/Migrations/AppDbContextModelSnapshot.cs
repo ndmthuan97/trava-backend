@@ -214,7 +214,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)");
 

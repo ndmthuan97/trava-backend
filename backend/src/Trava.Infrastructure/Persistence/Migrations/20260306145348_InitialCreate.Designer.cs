@@ -12,7 +12,7 @@ using Trava.Infrastructure.Persistence.Context;
 namespace Trava.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260225064054_InitialCreate")]
+    [Migration("20260306145348_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -217,7 +217,6 @@ namespace Trava.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)");
 

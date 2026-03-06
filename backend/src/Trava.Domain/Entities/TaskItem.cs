@@ -11,7 +11,7 @@ namespace Trava.Domain.Entities
     {
         public Guid SpaceId { get; set; }
         public string Title { get; set; } = default!;
-        public string Description { get; set; } = default!;
+        public string? Description { get; set; }
         public TaskItemStatus Status { get; set; } = TaskItemStatus.NotStart;
         public TaskItemPriority Priority { get; set; } = TaskItemPriority.Low;
         public int Point { get; set; } = 1;

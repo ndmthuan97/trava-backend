@@ -19,7 +19,7 @@ namespace Trava.Application.Features.TaskItems.Commands
     (
         [property: JsonIgnore] Guid Id,
         string Title,
-        string Description,
+        string? Description,
         TaskItemStatus Status,
         TaskItemPriority Priority,
         int Point,

@@ -163,7 +163,7 @@ namespace Trava.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SpaceId = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "citext", maxLength: 300, nullable: false),
-                    Description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
+                    Description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Priority = table.Column<int>(type: "integer", nullable: false),
                     Point = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),

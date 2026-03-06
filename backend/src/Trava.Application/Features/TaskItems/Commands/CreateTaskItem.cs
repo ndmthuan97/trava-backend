@@ -18,7 +18,7 @@ namespace Trava.Application.Features.TaskItems.Commands
     public record CreateTaskItemCommand(
         Guid SpaceId,
         string Title,
-        string Description,
+        string? Description,
         TaskItemStatus Status,
         TaskItemPriority Priority,
         int Point,
